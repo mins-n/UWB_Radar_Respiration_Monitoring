@@ -3,7 +3,7 @@
 clear,clc,close all;
 
 
-file_name = './Data/0830_광진,윤곤/0830_2nd_광진(1m)_윤곤(1.5m)/xethru_recording_meta.dat';
+file_name = './Data/0830_광진,윤곤/0830_2nd_광진(1m)_윤곤(1.5m)/xethru_datafloat_20220830_144349.dat';
 fid_raw = fopen(file_name,'r');
 
 sample_count = 0;
@@ -33,5 +33,4 @@ rawdata = [rawdata InputData];
 fid_raw = fclose(fid_raw);
 save rawdata.mat rawdata
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Baseline threshold
+
