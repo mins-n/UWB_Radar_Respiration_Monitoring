@@ -3,8 +3,8 @@ SD = [];
 
 SD = std(rawdata, 0, 2); %%거리에 대한 표준편차 배열
 
-[Max, Index] = max(SD(50:end,:)); %% Max : 가장 큰 표준편차 값, Index : Max의 위치 값 앞쪽 50cm 이내는 제거
-Index = Index + 49;
+[Max, Index] = max(SD(45:end,:)); %% Max : 가장 큰 표준편차 값, Index : Max의 위치 값 앞쪽 50cm 이내는 제거
+Index = Index + 44;
 Pm = mean(SD(Index-1 : Index+1));
 d0 = Index;
 n = mean(SD);
@@ -32,7 +32,7 @@ for i = 1 : size(rawdata,1) % 행 길이 만큼 반복
         TC_cnt = TC_cnt + 1;
     else
         if(TC_cnt > 0)
-            if(TC_cnt < 4)
+            if(TC_cnt < 10)
                 TC_matrix(i - TC_cnt : i - 1, :) = 0;
                 TC_cnt = 0;
             else
@@ -44,5 +44,9 @@ for i = 1 : size(rawdata,1) % 행 길이 만큼 반복
 end
 
 for i = 1 : size(rawdata,2) % 열 길이 만큼 반복
-    Data(:,i) = rawdata(:,i) .* TC_matrix;
+    Data(:,i) = rawdata(:,i) .* TC_matrix; %Dynamic threshold 아래 부분 제거
 end
+img_Data = Data(:,1:20);
+rgbImage = image(img_Data,'CDataMapping','scaled');
+colorbar
+
