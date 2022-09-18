@@ -27,10 +27,11 @@ while (1)
 end
 rawdata = [rawdata InputData];
 fid_raw = fclose(fid_raw);
-%surf(rawdata)
+surf(rawdata)
 
 obj = uwb_pre_processing();
-obj.process(rawdata);
+obj = obj.process(rawdata);
+obj.v_map = repmat(obj.v_map,1,sample_count);
 surf(obj.v_map);
 
 save rawdata.mat rawdata
