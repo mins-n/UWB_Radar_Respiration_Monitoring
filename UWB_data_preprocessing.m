@@ -3,8 +3,14 @@
 clear,clc,close all;
 
 
-file_name = './Data/0830_광진,윤곤/0830_3rd_광진(1m)_윤곤(1.5m)/xethru_datafloat_20220830_145140.dat';
-fid_raw = fopen(file_name,'r');
+cd('./Data/0830_광진,윤곤/0830_3rd_광진(1m)_윤곤(1.5m)');
+
+% Load UWB data
+FileList = dir('xethru_datafloat_*.dat');
+FileName = {FileList.name}';
+fid_raw = fopen(FileName{1},'r');
+
+cd('..\..\..\');
 
 sample_count = 0;
 sample_drop_period = 434; %% 이 이상 거리는 사용 안한다
@@ -31,5 +37,6 @@ end
 rawdata = [rawdata InputData];
 fid_raw = fclose(fid_raw);
 save rawdata.mat rawdata
+
 
 

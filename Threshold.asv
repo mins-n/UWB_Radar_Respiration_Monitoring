@@ -3,7 +3,7 @@ SD = [];
 
 SD = std(rawdata, 0, 2); %%거리에 대한 표준편차 배열
 
-[Max, Index] = max(SD(20:end,:)); %% Max : 가장 큰 표준편차 값, Index : Max의 위치 값 앞쪽 50cm 이내는 제거
+[Max, Index] = max(SD); %% Max : 가장 큰 표준편차 값, Index : Max의 위치 값 앞쪽 50cm 이내는 제거
 Index = Index + 44;
 Pm = mean(SD(Index-1 : Index+1));
 d0 = Index;
@@ -55,7 +55,6 @@ if(TC_cnt > 30)
     TC_matrix(size(rawdata,1) - TC_cnt : size(rawdata,1) - 1, :) = 0;
     TC_cnt = 0;
 end
-
 %필요없는 signal 0으로 만든 전체 이미지
 for i = 1 : size(rawdata,2) % 열 길이 만큼 반복
     Data(:,i) = rawdata(:,i) .* TC_matrix; %Dynamic threshold 아래 부분 제거
@@ -93,8 +92,9 @@ for i = 1 : Human_cnt
     subplot(4,1,4);
     image(adu,'CDataMapping','scaled');
     colormap(jet);
-    result_img = "result" + i +".jpg";
-    imwrite(u,result_img);
+
+    imwrite(u,'result.jpg')
 end
+imshow(mat2gray(u));
 
 
