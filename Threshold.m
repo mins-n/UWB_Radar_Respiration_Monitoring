@@ -55,5 +55,34 @@ subplot(Human_cnt+1,1,1), image(Data,'CDataMapping','scaled');
 
 % 이미지에서 검출된 사람의 수만큼 각각 잘려진 이미지
 for i = 1 : Human_cnt
-    subplot(Human_cnt+1,1,i+1), image(rawdata(Distance(i,1) :Distance(i,2), :),'CDataMapping','scaled');
+    subplot(2*Human_cnt+1,1,i+1), image(rawdata(Distance(i,1) :Distance(i,2), :),'CDataMapping','scaled');
 end
+
+for i = 1 : Human_cnt
+%Image by Randala Nyhof
+    im = rawdata(Distance(i,1) :Distance(i,2), :);
+    [imx,imy] = gradients(im);
+    adim = mean(abs(imx).^2+abs(imy).^2,3);
+
+    L = 2e-2;
+    [u,ux,uy] = l0_grad_minimization(im,L);
+    adu = mean(abs(ux).^2+abs(uy).^2,3);
+
+    figure;
+    subplot(4,1,1);
+    image(im,'CDataMapping','scaled');
+    subplot(4,1,2);
+    image(adim,'CDataMapping','scaled');
+
+    subplot(4,1,3);
+    image(u,'CDataMapping','scaled');
+    subplot(4,1,4);
+    image(adu,'CDataMapping','scaled');
+    colormap(jet);
+
+    imwrite(u,'result.jpg')
+end
+figure
+imshow(mat2gray(u));
+
+
