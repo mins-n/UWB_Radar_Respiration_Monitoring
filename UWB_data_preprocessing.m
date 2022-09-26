@@ -3,7 +3,7 @@
 clear,clc,close all;
 
 
-cd('./Data/0830_광진,윤곤/0830_3rd_광진(1m)_윤곤(1.5m)');
+cd('./Data/0830_광진,윤곤/0830_3rd_광진(1m)_윤곤(1.5m)/');
 
 % Load UWB data
 FileList = dir('xethru_datafloat_*.dat');
