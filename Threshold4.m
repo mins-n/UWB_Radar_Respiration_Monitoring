@@ -1,7 +1,8 @@
-% 수면 Raw data 
+% 수면 Preprocessing data 
 % fastindex 당 0.6445cm slowindex 1초 당 17index
 
-rawdata = sleep_Raw_data(:,100000:102000);
+rawdata = sleep_Preprocessing_data(:,100000:102000);
+
 Windowsize = 510; % 30s 
 Window_sliding = 1; % 윈도우 어디부터 시작할지 ex) 1이면 0 ~ 510
 Window_rawdata = [];
@@ -57,13 +58,13 @@ for i = 1 : size(rawdata,1) % 행 길이 만큼 반복
         TC_cnt = TC_cnt + 1; %점 수 세기
     else
         if(TC_cnt > 0)
-            if(TC_cnt < 15)  % 15미만의 점은 특이치로 판별하여 버림
+            if(TC_cnt < 7)  % 7미만의 점은 특이치로 판별하여 버림
                 TC_matrix(i - TC_cnt : i - 1, :) = 0;
                 TC_cnt = 0;
-            elseif(TC_cnt > 45) % 45이상의 점은 특이치로 판별하여 버림
+            elseif(TC_cnt > 11) % 11이상의 점은 특이치로 판별하여 버림
                 TC_matrix(i - TC_cnt : i - 1, :) = 0;
                 TC_cnt = 0;
-            else % 15이상 45이하 사람으로 판별
+            else % 7이상 11이하 사람으로 판별
                 Human_cnt = Human_cnt + 1;  %사람의 수 카운트
                 Distance(Human_cnt, 2) = 0;
                 Distance(Human_cnt, :) = [i - TC_cnt, i - 1];  %사람의 위치 index저장
@@ -74,13 +75,13 @@ for i = 1 : size(rawdata,1) % 행 길이 만큼 반복
 end
 
 if(TC_cnt ~= 0)
-    if(TC_cnt < 15)  % 15미만의 점은 특이치로 판별하여 버림
+    if(TC_cnt < 7)  % 7미만의 점은 특이치로 판별하여 버림
         TC_matrix(i - TC_cnt : i - 1, :) = 0;
         TC_cnt = 0;
-    elseif(TC_cnt > 45) % 45이상의 점은 특이치로 판별하여 버림
+    elseif(TC_cnt > 11) % 11이상의 점은 특이치로 판별하여 버림
         TC_matrix(i - TC_cnt : i - 1, :) = 0;
         TC_cnt = 0;
-    else % 15이상 45이하 사람으로 판별
+    else % 7이상 11이하 사람으로 판별
         Human_cnt = Human_cnt + 1;  %사람의 수 카운트
         Distance(Human_cnt, 2) = 0;
         Distance(Human_cnt, :) = [i - TC_cnt, i - 1];  %사람의 위치 index저장

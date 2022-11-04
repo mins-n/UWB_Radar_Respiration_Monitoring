@@ -114,7 +114,7 @@ for i = 1 : Human_cnt
     [Max_sub(i,1), Max_sub_Index(i,1)] = max(SD(Distance(i,1) :Distance(i,2),:));
     Max_sub_Index(i,1) = Max_sub_Index(i,1) + Distance(i,1);
     
-    if(size(rawdata,2) < Max_sub_Index(i,1) + 15)
+    if(size(rawdata,1) < Max_sub_Index(i,1) + 15)
          Distance(i,1) = Max_sub_Index(i,1) - 15;
         Distance(i,2) = size(rawdata,2);
     elseif(Max_sub_Index(i,1) - 15 < 1)
