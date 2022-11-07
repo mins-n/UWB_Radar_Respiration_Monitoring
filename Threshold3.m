@@ -1,7 +1,9 @@
 % 수면 Raw data 
 % fastindex 당 0.6445cm slowindex 1초 당 17index
 
-rawdata = sleep_Raw_data(:,100000:102000);
+% 데이터에서 2분 = 2040 index를 추출한다.
+rawdata = sleep_Raw_data(:,100000:102040);
+
 Windowsize = 510; % 30s 
 Window_sliding = 1; % 윈도우 어디부터 시작할지 ex) 1이면 0 ~ 510
 Window_rawdata = [];
@@ -118,7 +120,7 @@ for i = 1 : Human_cnt
     
     if(size(rawdata,1) < Max_sub_Index(i,1) + 15)
          Distance(i,1) = Max_sub_Index(i,1) - 15;
-        Distance(i,2) = size(rawdata,2);
+        Distance(i,2) = size(rawdata,1);
     elseif(Max_sub_Index(i,1) - 15 < 1)
         Distance(i,1) = 1;
         Distance(i,2) = Max_sub_Index(i,1) + 15;
