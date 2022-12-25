@@ -81,7 +81,7 @@ def l0_grad_minimization(y, L):
     return u, h, v
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Dat"
+dir_path = "./../Data/1121"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
 end_idx = 0
@@ -243,7 +243,6 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
         plt.ylabel('Distance')
 
 
-
     for i in range(Human_cnt):
         im = Window_rawdata[int(Distance[i, 0]):int(Distance[i, 1]) + 1, :]
 
@@ -252,9 +251,23 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
 
         plt.figure(num=3 + i,figsize=(10, 15))
         plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.9)
-        kernel_size= 5
+
+
+        Sobel_dx = cv2.Sobel(u.astype('float32'), -1, 1, 0)
+        Sobel_dy = cv2.Sobel(u.astype('float32'), -1, 0, 1)
+        Sobel_mag = cv2.magnitude(Sobel_dx, Sobel_dy)
+        Sobel_mag = Sobel_mag.clip(np.mean(Sobel_mag))
+
+        Scharr_dx = cv2.Scharr(u.astype('float32'), -1, 1, 0)
+        Scharr_dx = cv2.Scharr(Scharr_dx, -1, 1, 0)
+        Scharr_dy = cv2.Scharr(u.astype('float32'), -1, 0, 1)
+
+        Scharr_mag = cv2.magnitude(Scharr_dx, Scharr_dy)
+        Scharr_mag = Scharr_mag.clip(np.mean(Scharr_mag))
+        kernel_size = 5
         # Average
-        output1 = cv2.blur(u, (kernel_size, kernel_size))
+        output1 = cv2.blur(Sobel_mag, (kernel_size, kernel_size))
+        output1 = cv2.blur(Sobel_mag, (kernel_size, kernel_size))
         # Gaussian
         output2 = cv2.GaussianBlur(u, (kernel_size, kernel_size), 0)
         # Median

@@ -1,9 +1,11 @@
+# 샤를 소벨 비교
 # Image Filter Comparison
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
+from PIL import Image
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -81,7 +83,7 @@ def l0_grad_minimization(y, L):
     return u, h, v
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Dat"
+dir_path = "./../Data/1121"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
 end_idx = 0
@@ -247,33 +249,52 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
     for i in range(Human_cnt):
         im = Window_rawdata[int(Distance[i, 0]):int(Distance[i, 1]) + 1, :]
 
-        L = 0.02
+        L = 0.02;
         [u, ux, uy] = l0_grad_minimization(im, L)
 
-        plt.figure(num=3 + i,figsize=(10, 15))
-        plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.9)
-        kernel_size= 5
-        # Average
-        output1 = cv2.blur(u, (kernel_size, kernel_size))
-        # Gaussian
-        output2 = cv2.GaussianBlur(u, (kernel_size, kernel_size), 0)
-        # Median
-        output3 = cv2.medianBlur(u.astype('float32'), kernel_size)
-        # Bilateral
-        output4 = cv2.bilateralFilter(u.astype('float32'),9 , 75, 75)
+        plt.figure(num=3 + i, figsize=(10, 20))
+        plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=1)
+        kernel_size = 5
 
-        output_list = [u, output1, output2, output3, output4]
-        name_list = ["Original", 'Average', 'Gaussian', 'Median', 'Bilateral']
+        Sobel_dx = cv2.Sobel(u.astype('float32'), -1, 1, 0)
+        Sobel_dy = cv2.Sobel(u.astype('float32'), -1, 0, 1)
+        Sobel_mag = cv2.magnitude(Sobel_dx, Sobel_dy)
+        Sobel_mag = Sobel_mag.clip(np.mean(Sobel_mag))
+
+        Scharr_dx = cv2.Scharr(u.astype('float32'), -1, 1, 0)
+        Scharr_dx = cv2.Scharr(Scharr_dx, -1, 1, 0)
+        Scharr_dy = cv2.Scharr(u.astype('float32'), -1, 0, 1)
+
+        Scharr_mag = cv2.magnitude(Scharr_dx, Scharr_dy)
+        Scharr_mag = Scharr_mag.clip(np.mean(Scharr_mag))
+        # img_bilateralFilter = cv2.bilateralFilter(img_sobel_x.astype('float32'), -1, 4, 10)
+        # img_sobel_x = cv2.Sobel(img_sobel_x.astype('float32'), cv2.CV_64F, 1, 0, ksize=5)
+        # img_sobel_x = cv2.Sobel(img_sobel_x.astype('float32'), cv2.CV_64F, 1, 0, ksize=5)
+
+        input = []
+        output = []
+
+
+        output.append(Scharr_mag)
+        output.append(cv2.bilateralFilter(Scharr_mag, -1, 5, 10))
+        output.append(cv2.bilateralFilter(Scharr_mag, 9, 5, 10))
+
+        output.append(Sobel_mag)
+        output.append(cv2.bilateralFilter(Sobel_mag, -1, 5, 10))
+        output.append(cv2.bilateralFilter(Sobel_mag, 9, 5, 10))
+
+
+        # for i in range(10):
+        # output.append(cv2.bilateralFilter(input[i].astype('float32'), -1, 5, 10))
+
+        name_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
         # view
-        for j in range(len(output_list)):
-            plt.subplot(10, 1, (2*j + 1))
-            plt.imshow(output_list[j])
-            if j == 0:
-                plt.title("Image smoothing is " + str(Max_sub_Index[i, 0]) + "\n Original")
-            else:
-                plt.title(name_list[j])
-            plt.subplot(10, 1, (2*j + 2))
-            plt.imshow(output_list[j], cmap='gray')
-            plt.title(name_list[j] + " to grey")
+        for j in range(6):
+            plt.subplot(12, 1, (2*j + 1))
+            plt.imshow(output[j])
+            plt.title(name_list[j])
+            plt.subplot(12, 1, (2 * j + 2))
+            plt.imshow(output[j], cmap='gray')
+            plt.axis('off')
     plt.show()
 
