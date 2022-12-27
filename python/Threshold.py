@@ -1,7 +1,9 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
 import os
+import Peak_Detection
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -79,7 +81,7 @@ def l0_grad_minimization(y, L):
     return u, h, v
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/0927_광진,구찬/0927_1st_구찬(90cm)_광진(1m 90)"
+dir_path = "./../Data/2022.12.26/2022.12.26_4_soo_jin"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
 end_idx = 0
@@ -109,7 +111,7 @@ for file in os.listdir(dir_path):
 rawdata = np.array(InputData[:,1:],dtype=np.double)
 
 # fastindex당 0.6445cm slowindex 1초당 20index
-Windowsize = 400  # 20sec
+Windowsize = 600  # 30sec
 Window_rawdata = []
 
 fast_to_m = 0.006445  # fast index to meter
@@ -161,6 +163,11 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
 
     TC_matrix = SD >= Dynamic_threshold
 
+    for i in range(len(TC_matrix)):
+        if TC_matrix[i] == 0 and (i > 2) and (i < len(TC_matrix) - 1):
+            if TC_matrix[i - 1] == 1 and TC_matrix[i + 1] == 1:
+                TC_matrix[i] = 1
+
     TC_cnt = 0
     Human_cnt = 0
 
@@ -168,10 +175,10 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
         if TC_matrix[i]:
             TC_cnt += 1
         else:
-            if TC_cnt < 15:
+            if TC_cnt < 20:
                 TC_matrix[i - TC_cnt: i] = 0
                 TC_cnt = 0
-            elif TC_cnt > 45:
+            elif TC_cnt > 75:
                 TC_matrix[i - TC_cnt: i] = 0
                 TC_cnt = 0
             else:
@@ -180,10 +187,10 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
                 Distance[Human_cnt - 1, :] = [i - TC_cnt, i - 1]
                 TC_cnt = 0
     if TC_cnt != 0:
-        if TC_cnt < 15:
+        if TC_cnt < 20:
             TC_matrix[i-TC_cnt :] = 0
             TC_cnt = 0
-        elif TC_cnt > 45:
+        elif TC_cnt > 75:
             TC_matrix[i - TC_cnt:] = 0
             TC_cnt = 0
         else:
@@ -221,6 +228,7 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
     plt.ylabel('Distance')
 
 
+
     for i in range(Human_cnt):
         plt.subplot(Human_cnt + 1, 1, i + 2)
         plt.subplot(Human_cnt + 1, 1, i + 2).set_title("slow index is " + str(Max_sub_Index[i, 0]))
@@ -233,14 +241,19 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
     for i in range(Human_cnt):
         im = Window_rawdata[int(Distance[i, 0]):int(Distance[i, 1]) + 1, :]
 
-        L = 0.02;
+        L = 0.02
         [u, ux, uy] = l0_grad_minimization(im, L)
+
+        Scharr_dx = cv2.Scharr(u.astype('float32'), -1, 1, 0)
+        Scharr_dy = cv2.Scharr(u.astype('float32'), -1, 0, 1)
+        Scharr_mag = cv2.magnitude(Scharr_dx, Scharr_dy)
+        img = cv2.bilateralFilter(Scharr_mag, -1, 5, 10)
 
         plt.figure(num=3 + i, figsize=(10, 8))
         plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.5)
         plt.subplot(3, 1, 1)
         plt.subplot(3, 1, 1).set_title("slow index is " + str(Max_sub_Index[i, 0])+ "\n Image smoothing")
-        plt.pcolor(u)
+        plt.pcolor(img)
         plt.xlabel('Time')
         plt.ylabel('Distance')
 
@@ -248,8 +261,8 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
         print(image)
         plt.subplot(3, 1, 2)
         plt.subplot(3, 1, 2).set_title("Image Gray Scaling")
-        plt.imshow(u, cmap='gray')
-        plt.imsave(image, u, cmap='gray')
+        plt.imshow(img, cmap='gray')
+        plt.imsave(image, img, cmap='gray')
         plt.xlabel('Time')
         plt.ylabel('Distance')
     plt.show()
