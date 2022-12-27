@@ -81,7 +81,7 @@ def l0_grad_minimization(y, L):
     return u, h, v
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/2022.12.26/2022.12.26_5_jin_gon"
+dir_path = "./../Data/2022.12.26/2022.12.26_4_soo_jin"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
 end_idx = 0
@@ -227,12 +227,12 @@ for Window_sliding in range(int(len(rawdata[0]) / Windowsize) + 1):
         plt.figure(num=2, figsize=(10, 8))
         plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.5)
         plt.subplot(Human_cnt + 1, 1, 1 + i)
-        plt.subplot(Human_cnt + 1, 1, 1 + i).set_title("Images for Data beyond Dynamic Threshold")
+        plt.subplot(Human_cnt + 1, 1, 1 + i).set_title("UWB Peak Detection " + "Human " + i + 1)
         plt.plot(data)
         rpeak_i = rpeak_i.astype(int)
         plt.plot(rpeak_i, data[rpeak_i], 'ro')
         plt.xlabel('Time')
-        plt.ylabel('Distance')
+        plt.ylabel('Amplitude')
 
     plt.figure(num=3,figsize=(10, 8))
     plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.5)

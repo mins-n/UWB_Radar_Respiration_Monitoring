@@ -17,12 +17,11 @@ def Peak_Detection(data, fs, MI):
 
     while curIdx <= len(data):
         sIdx = curIdx
-        eIdx = curIdx + segLen - 1
+        eIdx = curIdx + segLen
 
         if eIdx > len(data):
             eIdx = len(data)
         tmpdata = data[sIdx:eIdx]
-
         m = np.max(tmpdata)
         i = np.argmax(tmpdata)
         segMaxIdx = np.append(segMaxIdx, sIdx + i)
@@ -42,16 +41,17 @@ def Peak_Detection(data, fs, MI):
                 tmpIdx = envPeakIdx[peakCnt - 4:peakCnt - 1].astype(int)
                 tmpdata2 = data[tmpIdx]
                 dIdx = np.diff(tmpIdx)
-                fp_idx = np.where(dIdx < interval_th)[0]
 
+                '''
+                fp_idx = np.where(dIdx < interval_th)[0].astype(int)
                 if len(fp_idx) > 0:
-                    m = np.min(tmpdata2[fp_idx:fp_idx + 1])
-                    k = np.argmin(tmpdata2[fp_idx:fp_idx + 1])
-                    tmpIdx = tmpIdx[:fp_idx + k-1] + tmpIdx[fp_idx + k:]
+                    # m = np.min(tmpdata2[fp_idx:fp_idx + 1])
+                    k = np.argmin(tmpdata2[fp_idx[0]:fp_idx[0] + 1])
+                    tmpIdx = tmpIdx[:fp_idx[0] + k-1] + tmpIdx[fp_idx[0] + k:]
                     tmpIdx.append(0)
                     envPeakIdx[peakCnt - 4:peakCnt - 1] = tmpIdx
                     peakCnt -= 1
-
+                '''
                 if peakCnt > 20:
                     tmpIdx = envPeakIdx[peakCnt - 11:peakCnt - 1].astype(int)
                     tmpdata2 = data[tmpIdx]
@@ -69,7 +69,7 @@ def Peak_Detection(data, fs, MI):
                     ab_interval = np.where((d_tmpIdx < minInterval) | (d_tmpIdx > maxInterval))[0]
 
                     if len(ab_interval) > 0:
-                        tmpIdx = np.array([x for i, x in enumerate(tmpIdx) if i not in abnormal + 1])
+                        tmpIdx = np.array([x for i, x in enumerate(tmpIdx) if i not in ab_interval])
                         d_tmpIdx = np.array([x for i, x in enumerate(d_tmpIdx) if i not in ab_interval])
 
                     if len(d_tmpIdx) > 0:
@@ -78,6 +78,8 @@ def Peak_Detection(data, fs, MI):
                             segLen = int(MI * fs / 4)
                         else:
                             segLen = int(tmpMI * fs / 4) - 1
+                    if segLen <= 1:
+                        segLen = int(MI * fs / 4)
         curIdx = eIdx + 1
         maxCnt = maxCnt + 1
 
@@ -85,6 +87,7 @@ def Peak_Detection(data, fs, MI):
     peak_i = envPeakIdx
     return peak_i, segMaxIdx
 
+"""
 # Load the .mat file
 data = scipy.io.loadmat('data.mat')
 data = np.array(data['data'])  # Convert the data to a NumPy array
@@ -107,3 +110,4 @@ plt.plot(data)
 rpeak_i = rpeak_i.astype(int)
 plt.plot(rpeak_i, data[rpeak_i], 'ro')
 plt.show()
+"""
