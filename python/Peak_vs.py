@@ -10,41 +10,46 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/2022.12.27/2022.12.27_1_gon_gu"
-UWB_path = "./../Data/2022.12.27/2022.12.27_1_gon_gu/2022.12.27_1_gon_gu.mat"
+dir_path = "./../Data/2022.12.27/2022.12.27_3_sun_jin"
+BIOPAC_path = "./../Data/2022.12.27/2022.12.27_3_sun_jin/2022.12.27_3_sun_jin.mat"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
 end_idx = 0
 
-for file in os.listdir(dir_path):
-    if 'xethru_datafloat_' in file:
-        file_path = os.path.join(dir_path, file)
-        arr = np.fromfile(file_path, dtype=int)
-        arr_slowindex_size = arr[2]
-        arr_size = arr.size
-        end_idx = 0
-        start_idx = 0
-        InputData = np.empty((arr_slowindex_size, 1), np.float32)
-        while end_idx < arr_size:
-            tmp_arr = np.fromfile(file_path, count=3, offset=end_idx * 4, dtype=np.uint32)
-            id = tmp_arr[0]
-            loop_cnt = tmp_arr[1]
-            numCountersFromFile = tmp_arr[2]
-            start_idx = end_idx + 3
-            end_idx += 3 + numCountersFromFile
-            fInputData = np.fromfile(file_path, count=numCountersFromFile, offset=start_idx * 4, dtype=np.float32)
-            sample_count += 1
-            if sample_count % sample_drop_period == 0:
-                continue
-            fInputData = np.array(fInputData).reshape(numCountersFromFile, 1)
-            InputData = np.append(InputData, fInputData, axis=1)  # Raw data
-rawdata = np.array(InputData[:, 1:], dtype=np.double)
+rawdata_path = dir_path + "/rawdata.npy"
+if os.path.exists(rawdata_path):
+    rawdata = np.load(rawdata_path)
+else:
+    for file in os.listdir(dir_path):
+        if 'xethru_datafloat_' in file:
+            file_path = os.path.join(dir_path, file)
+            arr = np.fromfile(file_path, dtype=int)
+            arr_slowindex_size = arr[2]
+            arr_size = arr.size
+            end_idx = 0
+            start_idx = 0
+            InputData = np.empty((arr_slowindex_size, 1), np.float32)
+            while end_idx < arr_size:
+                tmp_arr = np.fromfile(file_path, count=3, offset=end_idx * 4, dtype=np.uint32)
+                id = tmp_arr[0]
+                loop_cnt = tmp_arr[1]
+                numCountersFromFile = tmp_arr[2]
+                start_idx = end_idx + 3
+                end_idx += 3 + numCountersFromFile
+                fInputData = np.fromfile(file_path, count=numCountersFromFile, offset=start_idx * 4, dtype=np.float32)
+                sample_count += 1
+                if sample_count % sample_drop_period == 0:
+                    continue
+                fInputData = np.array(fInputData).reshape(numCountersFromFile, 1)
+                InputData = np.append(InputData, fInputData, axis=1)  # Raw data
+    rawdata = np.array(InputData[:, 1:], dtype=np.double)
+    np.save(rawdata_path, rawdata)
 
 fast_to_m = 0.006445  # fast index to meter
 UWB_Radar_index_start = 0.5  # UWB Radar Range 0.5 ~ 2.5m
 UWB_Radar_index_start = math.floor(UWB_Radar_index_start / fast_to_m)
 
-Window_rawdata = np.array(rawdata[:, 1800:2400])
+Window_rawdata = np.array(rawdata[:, 3000:3600])
 SD = np.array([])
 for i in range(len(Window_rawdata)):
     SD = np.append(SD, np.std(Window_rawdata[i]))  # 거리에 대한 표준편차 배열
@@ -138,7 +143,7 @@ for i in range(Human_cnt):
     plt.ylabel('Amplitude')
 
 BIOPAC_rpeak_i = []
-data = scipy.io.loadmat(UWB_path)
+data = scipy.io.loadmat(BIOPAC_path)
 data = np.array(data['channels'])  # Convert the data to a NumPy array
 
 data1 = data[0][0][0][0][0][0]

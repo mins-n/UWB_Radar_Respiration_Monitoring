@@ -22,6 +22,10 @@ def Peak_Detection(data, fs, MI):
         if eIdx > len(data):
             eIdx = len(data)
         tmpdata = data[sIdx:eIdx]
+
+        if len(tmpdata) <= 1:
+            break
+
         m = np.max(tmpdata)
         i = np.argmax(tmpdata)
         segMaxIdx = np.append(segMaxIdx, sIdx + i)
@@ -78,8 +82,8 @@ def Peak_Detection(data, fs, MI):
                             segLen = int(MI * fs / 4)
                         else:
                             segLen = int(tmpMI * fs / 4) - 1
-                    if segLen <= 1:
-                        segLen = int(MI * fs / 4)
+                    if segLen <= 2:
+                        segLen = 3
         curIdx = eIdx + 1
         maxCnt = maxCnt + 1
 

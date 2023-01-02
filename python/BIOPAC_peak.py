@@ -5,7 +5,7 @@ import scipy.io
 
 
 # Load the .mat file
-dir_path = "./../Data/2022.12.26/2022.12.26_1_sun_gu/2022.12.26_1_sun_gu.mat"
+dir_path = "./../Data/2022.12.28/2022.12.28_1_gon_sun/2022.12.28_1_gon_sun.mat"
 data = scipy.io.loadmat(dir_path)
 data = np.array(data['channels'])  # Convert the data to a NumPy array
 
