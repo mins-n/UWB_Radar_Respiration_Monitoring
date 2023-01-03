@@ -122,6 +122,21 @@ for i in range(Human_cnt):
     Max_sub_Index[i, 0] = np.argmax(SD[int(Distance[i, 0]) - 1:int(Distance[i, 1])])
 
     Max_sub_Index[i, 0] += Distance[i, 0]
+    for i in range(Human_cnt):
+        Max_sub[i, 0] = max(SD[int(Distance[i, 0]) - 1:int(Distance[i, 1])])
+        Max_sub_Index[i, 0] = np.argmax(SD[int(Distance[i, 0]) - 1:int(Distance[i, 1])])
+
+        Max_sub_Index[i, 0] += Distance[i, 0]
+
+        if len(rawdata) < Max_sub_Index[i, 0] + 15:
+            Distance[i, 0] = Max_sub_Index[i, 0] - 15
+            Distance[i, 1] = len(rawdata[1])
+        elif Max_sub_Index[i, 0] - 15 < 1:
+            Distance[i, 0] = 1
+            Distance[i, 1] = Max_sub_Index[i, 0] + 15
+        else:
+            Distance[i, 0] = Max_sub_Index[i, 0] - 15
+            Distance[i, 1] = Max_sub_Index[i, 0] + 15
 
 Data = TC_matrix.reshape(TC_matrix.size, 1) * rawdata
 fs = 20
@@ -169,13 +184,10 @@ cut_idx = int(input("UWB Rawdata 그래프를 참고하여 자를 부분에 inde
 UWB_cut_path = dir_path + "/UWB_cut.npy"
 BIOPAC_cut_path = dir_path + "/BIOPAC_cut.npy"
 
-UWB_cut = []
 BIOPAC_cut = []
-for i in range(Human_cnt):
-    UWB_cut.append(rawdata[Max_sub_Index[i, 0].astype(int)][cut_idx:])
+UWB_cut = rawdata[:,cut_idx:]
 BIOPAC_cut.append(data1[int(cut_idx*data1_fs/fs):])
 BIOPAC_cut.append(data2[int(cut_idx*data2_fs/fs):])
 
 np.save(UWB_cut_path,UWB_cut)
 np.save(BIOPAC_cut_path, BIOPAC_cut)
-plt.show()
