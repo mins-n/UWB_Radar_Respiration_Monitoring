@@ -9,12 +9,12 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/2022.12.28/2022.12.28_3_soo_sun"
-BIOPAC_path = dir_path + "/2022.12.28_3_soo_sun.mat"
+file_name = "2023.01.02_1_sun_chan"
+dir_path = "./../Data/2023.01.02/" + file_name
+BIOPAC_path = dir_path + "/" + file_name + ".mat"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
 end_idx = 0
-
 
 rawdata_path = dir_path + "/rawdata.npy"
 if os.path.exists(rawdata_path):
@@ -49,7 +49,7 @@ fast_to_m = 0.006445  # fast index to meter
 UWB_Radar_index_start = 0.5  # UWB Radar Range 0.5 ~ 2.5m
 UWB_Radar_index_start = math.floor(UWB_Radar_index_start / fast_to_m)
 
-Window_rawdata = np.array(rawdata[:, 800:3200])
+Window_rawdata = np.array(rawdata[:, 5000:6000])
 SD = np.array([])
 for i in range(len(Window_rawdata)):
     SD = np.append(SD, np.std(Window_rawdata[i]))  # 거리에 대한 표준편차 배열
@@ -150,12 +150,16 @@ Data = TC_matrix.reshape(TC_matrix.size, 1) * rawdata
 fs = 20
 show_idx = 60 # 데이터들의 시작부터 몇초 볼껀지
 # Print the detected peaks
+
+if Human_cnt > 2:
+    Human_cnt = 2 #2명보다 많으면 2명으로 고정(임시) -최광진
+
 for i in range(Human_cnt):
     UWB_data = rawdata[Max_sub_Index[i, 0].astype(int)][:fs * show_idx]
     plt.figure(num=2, figsize=(10, 8))
     plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.5)
-    plt.subplot(Human_cnt + 1, 1, 1 + i)
-    plt.subplot(Human_cnt + 1, 1, 1 + i).set_title("UWB Peak Detection " + "Human " + str(i + 1))
+    plt.subplot(Human_cnt, 1, 1 + i)
+    plt.subplot(Human_cnt, 1, 1 + i).set_title("UWB Peak Detection " + "Human " + str(i + 1) +"_" + str(Max_sub_Index[i, 0]))
     plt.plot(UWB_data)
     plt.xlabel('Time')
     plt.ylabel('Amplitude')
@@ -175,14 +179,14 @@ data2 = data2.astype(float)  # Cast to float if necessary
 
 plt.figure(num=3, figsize=(10, 8))
 plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.5)
-plt.subplot(3, 1, 1)
-plt.subplot(3, 1, 1).set_title("BIOPAC Peak Detection Data1")
+plt.subplot(2, 1, 1)
+plt.subplot(2, 1, 1).set_title("BIOPAC Peak Detection Data1")
 plt.plot(data1[:data1_fs*show_idx])
 plt.xlabel('Time')
 plt.ylabel('Amplitude')
 
-plt.subplot(3, 1, 2)
-plt.subplot(3, 1, 2).set_title("BIOPAC Peak Detection Data2")
+plt.subplot(2, 1, 2)
+plt.subplot(2, 1, 2).set_title("BIOPAC Peak Detection Data2")
 plt.plot(data2[:data2_fs*show_idx])
 plt.xlabel('Time')
 plt.ylabel('Amplitude')

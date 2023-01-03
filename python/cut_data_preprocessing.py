@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
-import Peak_Detection
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -81,7 +80,7 @@ def l0_grad_minimization(y, L):
     return u, h, v
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/2022.12.27/2022.12.27_3_sun_jin"
+dir_path = "./../Data/2023.01.02/2023.01.02_3_sun_chan"
 UWB_data_path = dir_path + "/UWB_cut.npy"
 BIOPAC_data_path = dir_path + "/BIOPAC_cut.npy"
 UWB_data = np.load(UWB_data_path)
@@ -209,8 +208,9 @@ for Window_sliding in range(5):
 
     Data = TC_matrix.reshape(TC_matrix.size,1) * UWB_data
 
-
-    for i in range(Human):
+    if Human_cnt > 2:
+        Human_cnt = 2  # 2명보다 많으면 2명으로 고정(임시) -최광진
+    for i in range(Human_cnt):
         im = Window_UWB_data[int(Distance[i, 0]):int(Distance[i, 1]) + 1, :]
 
         L = 0.02
