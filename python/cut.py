@@ -9,8 +9,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/2022.12.27/2022.12.27_3_sun_jin"
-BIOPAC_path = "./../Data/2022.12.27/2022.12.27_3_sun_jin/2022.12.27_3_sun_jin.mat"
+dir_path = "./../Data/2022.12.28/2022.12.28_3_soo_sun"
+BIOPAC_path = dir_path + "/2022.12.28_3_soo_sun.mat"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
 end_idx = 0
@@ -49,7 +49,7 @@ fast_to_m = 0.006445  # fast index to meter
 UWB_Radar_index_start = 0.5  # UWB Radar Range 0.5 ~ 2.5m
 UWB_Radar_index_start = math.floor(UWB_Radar_index_start / fast_to_m)
 
-Window_rawdata = np.array(rawdata[:, 3000:3600])
+Window_rawdata = np.array(rawdata[:, 800:3200])
 SD = np.array([])
 for i in range(len(Window_rawdata)):
     SD = np.append(SD, np.std(Window_rawdata[i]))  # 거리에 대한 표준편차 배열
@@ -74,6 +74,14 @@ for i in range(len(di)):
 k = k ** (-1)
 Dynamic_threshold = np.array(k) * baselineThreashold
 
+plt.figure(num=1,figsize=(10, 8))
+plt.title("Dynamic Threshold and Standard deviation of raw data")
+plt.plot(Dynamic_threshold)
+plt.plot(SD)
+plt.xlabel('Distance')
+plt.ylabel('standard deviation')
+plt.legend(["Dynamic_threshold","Standard deviation of raw data"])
+
 TC_matrix = np.array([])
 Distance = np.zeros((0, 2))
 
@@ -91,7 +99,7 @@ for i in range(len(rawdata)):
     if TC_matrix[i]:
         TC_cnt += 1
     else:
-        if TC_cnt < 20:
+        if TC_cnt < 15:
             TC_matrix[i - TC_cnt: i] = 0
             TC_cnt = 0
         elif TC_cnt > 75:
@@ -103,7 +111,7 @@ for i in range(len(rawdata)):
             Distance[Human_cnt - 1, :] = [i - TC_cnt, i - 1]
             TC_cnt = 0
 if TC_cnt != 0:
-    if TC_cnt < 20:
+    if TC_cnt < 15:
         TC_matrix[i - TC_cnt:] = 0
         TC_cnt = 0
     elif TC_cnt > 75:
@@ -144,7 +152,7 @@ show_idx = 60 # 데이터들의 시작부터 몇초 볼껀지
 # Print the detected peaks
 for i in range(Human_cnt):
     UWB_data = rawdata[Max_sub_Index[i, 0].astype(int)][:fs * show_idx]
-    plt.figure(num=1, figsize=(10, 8))
+    plt.figure(num=2, figsize=(10, 8))
     plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.5)
     plt.subplot(Human_cnt + 1, 1, 1 + i)
     plt.subplot(Human_cnt + 1, 1, 1 + i).set_title("UWB Peak Detection " + "Human " + str(i + 1))
@@ -165,7 +173,7 @@ data2_fs = int(data[0][1][0][0][1][0])
 data2 = data2.flatten()  # Flatten the data if it is not 1D
 data2 = data2.astype(float)  # Cast to float if necessary
 
-plt.figure(num=2, figsize=(10, 8))
+plt.figure(num=3, figsize=(10, 8))
 plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.5)
 plt.subplot(3, 1, 1)
 plt.subplot(3, 1, 1).set_title("BIOPAC Peak Detection Data1")
