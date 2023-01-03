@@ -187,7 +187,9 @@ BIOPAC_cut_path = dir_path + "/BIOPAC_cut.npy"
 BIOPAC_cut = []
 UWB_cut = rawdata[:,cut_idx:]
 BIOPAC_cut.append(data1[int(cut_idx*data1_fs/fs):])
+BIOPAC_cut.append(data1_fs)
 BIOPAC_cut.append(data2[int(cut_idx*data2_fs/fs):])
+BIOPAC_cut.append(data2_fs)
 
 np.save(UWB_cut_path,UWB_cut)
 np.save(BIOPAC_cut_path, BIOPAC_cut)
