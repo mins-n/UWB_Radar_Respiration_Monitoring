@@ -107,13 +107,14 @@ for Window_sliding in range(5):
     if not os.path.exists(save_dir_path):
         os.mkdir(save_dir_path)
     Window_UWB_data = np.array(UWB_data[:, Window_sliding * get_size * UWB_fs + Window_sliding * dump_size * UWB_fs: (Window_sliding + 1) * get_size * UWB_fs + Window_sliding * dump_size * UWB_fs])
-    window_BIOPAC_data_1 = np.array(BIOPAC_data_1[Window_sliding * get_size * BIOPAC_fs_1: (Window_sliding + 1) * get_size * BIOPAC_fs_1])
-    window_BIOPAC_data_2 = np.array(BIOPAC_data_2[Window_sliding * get_size * BIOPAC_fs_2: (Window_sliding + 1) * get_size * BIOPAC_fs_2])
+    window_BIOPAC_data_1 = np.array(BIOPAC_data_1[Window_sliding * get_size * BIOPAC_fs_1 + Window_sliding * dump_size * BIOPAC_fs_1: (Window_sliding + 1) * get_size * BIOPAC_fs_1  + Window_sliding * dump_size * BIOPAC_fs_1])
+    window_BIOPAC_data_2 = np.array(BIOPAC_data_2[Window_sliding * get_size * BIOPAC_fs_2  + Window_sliding * dump_size * BIOPAC_fs_2: (Window_sliding + 1) * get_size * BIOPAC_fs_2 + Window_sliding * dump_size * BIOPAC_fs_2])
     BIOPAC_data = []
     BIOPAC_data.append(window_BIOPAC_data_1)
     BIOPAC_data.append(BIOPAC_fs_1)
     BIOPAC_data.append(window_BIOPAC_data_2)
     BIOPAC_data.append(BIOPAC_fs_2)
+    BIOPAC_data = np.array(BIOPAC_data, dtype="object")
     np.save(BIOPAC_data_save_path, BIOPAC_data)
 
     SD = np.array([])
@@ -161,33 +162,51 @@ for Window_sliding in range(5):
     TC_cnt = 0
     Human_cnt = 0
     Human = 2
-    for i in range(len(UWB_data)):
-        if TC_matrix[i]:
-            TC_cnt += 1
-        else:
-            if TC_cnt < 15:
-                TC_matrix[i - TC_cnt: i] = 0
+
+    dynamic_TC = 16
+    while Human_cnt < Human:
+        print("Human_cnt:%d Dynamic_TC:%d" % (Human_cnt, dynamic_TC))
+        if dynamic_TC == 1: break
+        Human_cnt = 0
+        dynamic_TC -= 1
+        TC_cnt = 0
+
+        TC_matrix = SD >= Dynamic_threshold
+
+        for i in range(len(TC_matrix)):
+            if TC_matrix[i] == 0 and (i > 2) and (i < len(TC_matrix) - 1):
+                if TC_matrix[i - 1] == 1 and TC_matrix[i + 1] == 1:
+                    TC_matrix[i] = 1
+
+        for i in range(len(UWB_data)):
+            if TC_matrix[i]:
+                TC_cnt += 1
+            else:
+                if TC_cnt < dynamic_TC:
+                    TC_matrix[i - TC_cnt: i] = 0
+                    TC_cnt = 0
+                elif TC_cnt > 75:
+                    TC_matrix[i - TC_cnt: i] = 0
+                    TC_cnt = 0
+                else:
+                    Human_cnt += 1
+                    Distance = np.r_[Distance, [[0, 0]]]
+                    Distance[Human_cnt - 1, :] = [i - TC_cnt, i - 1]
+                    TC_cnt = 0
+        if TC_cnt != 0:
+            if TC_cnt < dynamic_TC:
+                TC_matrix[i-TC_cnt :] = 0
                 TC_cnt = 0
             elif TC_cnt > 75:
-                TC_matrix[i - TC_cnt: i] = 0
+                TC_matrix[i - TC_cnt:] = 0
                 TC_cnt = 0
             else:
                 Human_cnt += 1
                 Distance = np.r_[Distance, [[0, 0]]]
                 Distance[Human_cnt - 1, :] = [i - TC_cnt, i - 1]
                 TC_cnt = 0
-    if TC_cnt != 0:
-        if TC_cnt < 15:
-            TC_matrix[i-TC_cnt :] = 0
-            TC_cnt = 0
-        elif TC_cnt > 75:
-            TC_matrix[i - TC_cnt:] = 0
-            TC_cnt = 0
-        else:
-            Human_cnt += 1
-            Distance = np.r_[Distance, [[0, 0]]]
-            Distance[Human_cnt - 1, :] = [i - TC_cnt, i - 1]
-            TC_cnt = 0
+
+    print("Human_cnt %d" % Human_cnt)
     Max_sub = np.zeros((Human_cnt, 1))
     Max_sub_Index = np.zeros((Human_cnt, 1))
     for i in range(Human_cnt):
@@ -209,7 +228,8 @@ for Window_sliding in range(5):
     Data = TC_matrix.reshape(TC_matrix.size,1) * UWB_data
 
     if Human_cnt > 2:
-        Human_cnt = 2  # 2명보다 많으면 2명으로 고정(임시) -최광진
+        Human_cnt = 2  # 2명보다 많으면 2명으로 고정
+
     for i in range(Human_cnt):
         im = Window_UWB_data[int(Distance[i, 0]):int(Distance[i, 1]) + 1, :]
 
@@ -230,7 +250,7 @@ for Window_sliding in range(5):
         plt.ylabel('Distance')
 
         image = save_dir_path + "/" + str(i + 1) + "_person.jpg"
-        gray_image = save_dir_path + "/" + str(i + 1) + "_person_gary.jpg"
+        gray_image = save_dir_path + "/" + str(i + 1) + "_person_gray.jpg"
         print(gray_image)
         plt.subplot(3, 1, 2)
         plt.subplot(3, 1, 2).set_title("Image Gray Scaling")

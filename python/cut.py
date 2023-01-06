@@ -9,47 +9,23 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Raw data extraction from .dat file ======================================
-file_name = "2023.01.02_1_sun_chan"
+file_name = "2023.01.02_3_sun_chan"
 dir_path = "./../Data/2023.01.02/" + file_name
 BIOPAC_path = dir_path + "/" + file_name + ".mat"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
 end_idx = 0
 
-rawdata_path = dir_path + "/rawdata.npy"
+rawdata_path = dir_path + "/UWB_sync.npy"
 if os.path.exists(rawdata_path):
     rawdata = np.load(rawdata_path)
 else:
-    for file in os.listdir(dir_path):
-        if 'xethru_datafloat_' in file:
-            file_path = os.path.join(dir_path, file)
-            arr = np.fromfile(file_path, dtype=int)
-            arr_slowindex_size = arr[2]
-            arr_size = arr.size
-            end_idx = 0
-            start_idx = 0
-            InputData = np.empty((arr_slowindex_size, 1), np.float32)
-            while end_idx < arr_size:
-                tmp_arr = np.fromfile(file_path, count=3, offset=end_idx * 4, dtype=np.uint32)
-                id = tmp_arr[0]
-                loop_cnt = tmp_arr[1]
-                numCountersFromFile = tmp_arr[2]
-                start_idx = end_idx + 3
-                end_idx += 3 + numCountersFromFile
-                fInputData = np.fromfile(file_path, count=numCountersFromFile, offset=start_idx * 4, dtype=np.float32)
-                sample_count += 1
-                if sample_count % sample_drop_period == 0:
-                    continue
-                fInputData = np.array(fInputData).reshape(numCountersFromFile, 1)
-                InputData = np.append(InputData, fInputData, axis=1)  # Raw data
-    rawdata = np.array(InputData[:, 1:], dtype=np.double)
-    np.save(rawdata_path, rawdata)
-
+    print("싱크 안맞춤")
 fast_to_m = 0.006445  # fast index to meter
 UWB_Radar_index_start = 0.5  # UWB Radar Range 0.5 ~ 2.5m
 UWB_Radar_index_start = math.floor(UWB_Radar_index_start / fast_to_m)
 
-Window_rawdata = np.array(rawdata[:, 5000:6000])
+Window_rawdata = np.array(rawdata[:, 1200:2400])
 SD = np.array([])
 for i in range(len(Window_rawdata)):
     SD = np.append(SD, np.std(Window_rawdata[i]))  # 거리에 대한 표준편차 배열
@@ -94,34 +70,50 @@ for i in range(len(TC_matrix)):
 
 TC_cnt = 0
 Human_cnt = 0
+Human = 2
 
-for i in range(len(rawdata)):
-    if TC_matrix[i]:
-        TC_cnt += 1
-    else:
-        if TC_cnt < 15:
-            TC_matrix[i - TC_cnt: i] = 0
+dynamic_TC = 16
+while Human_cnt < Human:
+    print("Human_cnt:%d Dynamic_TC:%d" % (Human_cnt, dynamic_TC))
+    if dynamic_TC == 1: break
+    Human_cnt = 0
+    dynamic_TC -= 1
+    TC_cnt = 0
+
+    TC_matrix = SD >= Dynamic_threshold
+
+    for i in range(len(TC_matrix)):
+        if TC_matrix[i] == 0 and (i > 2) and (i < len(TC_matrix) - 1):
+            if TC_matrix[i - 1] == 1 and TC_matrix[i + 1] == 1:
+                TC_matrix[i] = 1
+
+    for i in range(len(rawdata)):
+        if TC_matrix[i]:
+            TC_cnt += 1
+        else:
+            if TC_cnt < dynamic_TC:
+                TC_matrix[i - TC_cnt: i] = 0
+                TC_cnt = 0
+            elif TC_cnt > 75:
+                TC_matrix[i - TC_cnt: i] = 0
+                TC_cnt = 0
+            else:
+                Human_cnt += 1
+                Distance = np.r_[Distance, [[0, 0]]]
+                Distance[Human_cnt - 1, :] = [i - TC_cnt, i - 1]
+                TC_cnt = 0
+    if TC_cnt != 0:
+        if TC_cnt < dynamic_TC:
+            TC_matrix[i - TC_cnt:] = 0
             TC_cnt = 0
         elif TC_cnt > 75:
-            TC_matrix[i - TC_cnt: i] = 0
+            TC_matrix[i - TC_cnt:] = 0
             TC_cnt = 0
         else:
             Human_cnt += 1
             Distance = np.r_[Distance, [[0, 0]]]
             Distance[Human_cnt - 1, :] = [i - TC_cnt, i - 1]
             TC_cnt = 0
-if TC_cnt != 0:
-    if TC_cnt < 15:
-        TC_matrix[i - TC_cnt:] = 0
-        TC_cnt = 0
-    elif TC_cnt > 75:
-        TC_matrix[i - TC_cnt:] = 0
-        TC_cnt = 0
-    else:
-        Human_cnt += 1
-        Distance = np.r_[Distance, [[0, 0]]]
-        Distance[Human_cnt - 1, :] = [i - TC_cnt, i - 1]
-        TC_cnt = 0
 
 Max_sub = np.zeros((Human_cnt, 1))
 Max_sub_Index = np.zeros((Human_cnt, 1))
@@ -204,4 +196,5 @@ BIOPAC_cut.append(data2[int(cut_idx*data2_fs/fs):])
 BIOPAC_cut.append(data2_fs)
 
 np.save(UWB_cut_path,UWB_cut)
+BIOPAC_cut = np.array(BIOPAC_cut,dtype="object")
 np.save(BIOPAC_cut_path, BIOPAC_cut)
