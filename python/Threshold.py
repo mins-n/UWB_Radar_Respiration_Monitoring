@@ -81,7 +81,7 @@ def l0_grad_minimization(y, L):
     return u, h, v
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/2022.12.28/2022.12.28_5_soo_jin"
+dir_path = "./../Data/2022.12.21/2022.12.21_1_gu"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
 end_idx = 0

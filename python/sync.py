@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[29]:
-
-
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -88,10 +82,9 @@ def l0_grad_minimization(y, L):
 
     return u, h, v
 
-
 # Raw data extraction from .dat file ======================================
-file_name = "2022.12.28_5_soo_jin"
-dir_path = "./../Data/2022.12.28/" + file_name
+file_name = "2023.01.04_1_gu_gon"
+dir_path = "./../Data/2023.01.04/" + file_name
 BIOPAC_path = dir_path + "/" + file_name + ".mat"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
@@ -316,60 +309,58 @@ for i in range(0,len(UWB_rpeak_i[0])-5) :
             start_idx1 = UWB_rpeak_i[0][i]
             start_idx2 = data1_rpeak_i[j]
 
-sync = int(start_idx1 - start_idx2)
+sync = abs(int(start_idx1 - start_idx2))
 
 UWB_sync_path = dir_path + "/UWB_sync.npy"
 BIOPAC_sync_path = dir_path + "/BIOPAC_sync.npy"
 
 show = 1200
 
-if sync >= 0:
-    UWB_sync = rawdata[:,int(sync):]
-    plt.subplot(4, 1, 1)
-    plt.plot(UWB_sync[Max_sub_Index[0, 0].astype(int),show:show+500])
-    plt.gca().axes.xaxis.set_visible(False)
-    plt.gca().axes.yaxis.set_visible(False)
-    BIOPAC_sync = []
-    BIOPAC_sync.append(data1)
-    plt.subplot(4, 1, 2)
-    plt.plot(data1_origin[show*sampling:(show+500)*sampling])
+UWB_sync = rawdata[:, int(sync):]
+plt.subplot(4, 1, 1)
+plt.plot(UWB_sync[Max_sub_Index[0, 0].astype(int), show:show + 500])
+plt.gca().axes.xaxis.set_visible(False)
+plt.gca().axes.yaxis.set_visible(False)
+BIOPAC_sync = []
+BIOPAC_sync.append(data1)
+plt.subplot(4, 1, 2)
+plt.plot(data1_origin[show * sampling:(show + 500) * sampling])
 
-    im = UWB_sync[Max_sub_Index[0, 0].astype(int) - 15:Max_sub_Index[0, 0].astype(int) + 15, show:show+500]
-    L = 0.02
-    [u, ux, uy] = l0_grad_minimization(im, L)
-    Scharr_dx = cv2.Scharr(u.astype('float32'), -1, 1, 0)
-    Scharr_dy = cv2.Scharr(u.astype('float32'), -1, 0, 1)
-    Scharr_mag = cv2.magnitude(Scharr_dx, Scharr_dy)
-    img = cv2.bilateralFilter(Scharr_mag, -1, 5, 10)
-    plt.subplot(4, 1, 3)
-    plt.pcolor(img)
-    plt.subplot(4, 1, 4)
-    plt.imshow(img, cmap='gray')
-    plt.show()
+im = UWB_sync[Max_sub_Index[0, 0].astype(int) - 15:Max_sub_Index[0, 0].astype(int) + 15, show:show + 500]
+L = 0.02
+[u, ux, uy] = l0_grad_minimization(im, L)
+Scharr_dx = cv2.Scharr(u.astype('float32'), -1, 1, 0)
+Scharr_dy = cv2.Scharr(u.astype('float32'), -1, 0, 1)
+Scharr_mag = cv2.magnitude(Scharr_dx, Scharr_dy)
+img = cv2.bilateralFilter(Scharr_mag, -1, 5, 10)
+plt.subplot(4, 1, 3)
+plt.pcolor(img)
+plt.subplot(4, 1, 4)
+plt.imshow(img, cmap='gray')
+plt.show()
 
+BIOPAC_sync.append(data1_fs)
+plt.subplot(4, 1, 1)
+plt.plot(UWB_sync[Max_sub_Index[1, 0].astype(int), show:show + 500])
+plt.gca().axes.xaxis.set_visible(False)
+plt.gca().axes.yaxis.set_visible(False)
+BIOPAC_sync.append(data2)
+plt.subplot(4, 1, 2)
+plt.plot(data2_origin[show * sampling:(show + 500) * sampling])
+BIOPAC_sync.append(data2_fs)
 
-    BIOPAC_sync.append(data1_fs)
-    plt.subplot(4, 1, 1)
-    plt.plot(UWB_sync[Max_sub_Index[1, 0].astype(int),show:show+500])
-    plt.gca().axes.xaxis.set_visible(False)
-    plt.gca().axes.yaxis.set_visible(False)
-    BIOPAC_sync.append(data2)
-    plt.subplot(4, 1, 2)
-    plt.plot(data2_origin[show*sampling:(show+500)*sampling])
-    BIOPAC_sync.append(data2_fs)
-
-    im = UWB_sync[Max_sub_Index[1, 0].astype(int) - 15:Max_sub_Index[1, 0].astype(int) + 15, show:show + 500]
-    L = 0.02
-    [u, ux, uy] = l0_grad_minimization(im, L)
-    Scharr_dx = cv2.Scharr(u.astype('float32'), -1, 1, 0)
-    Scharr_dy = cv2.Scharr(u.astype('float32'), -1, 0, 1)
-    Scharr_mag = cv2.magnitude(Scharr_dx, Scharr_dy)
-    img = cv2.bilateralFilter(Scharr_mag, -1, 5, 10)
-    plt.subplot(4, 1, 3)
-    plt.pcolor(img)
-    plt.subplot(4, 1, 4)
-    plt.imshow(img, cmap='gray')
-    plt.show()
+im = UWB_sync[Max_sub_Index[1, 0].astype(int) - 15:Max_sub_Index[1, 0].astype(int) + 15, show:show + 500]
+L = 0.02
+[u, ux, uy] = l0_grad_minimization(im, L)
+Scharr_dx = cv2.Scharr(u.astype('float32'), -1, 1, 0)
+Scharr_dy = cv2.Scharr(u.astype('float32'), -1, 0, 1)
+Scharr_mag = cv2.magnitude(Scharr_dx, Scharr_dy)
+img = cv2.bilateralFilter(Scharr_mag, -1, 5, 10)
+plt.subplot(4, 1, 3)
+plt.pcolor(img)
+plt.subplot(4, 1, 4)
+plt.imshow(img, cmap='gray')
+plt.show()
 
 print(sync)
 np.save(UWB_sync_path, UWB_sync)
