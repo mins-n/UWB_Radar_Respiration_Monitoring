@@ -1,10 +1,7 @@
-import math
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 import Peak_Detection
-import scipy.io
-BIOPAC_folder_path= './../Data/2022.12.27/2022.12.27_2_sun_jin/0/'
+BIOPAC_folder_path= './../Data/2023.01.04/2023.01.04_3_gon_gu/4/'
 BIOPAC_path = BIOPAC_folder_path+"BIOPAC_data.npy" 
 
 
@@ -59,24 +56,33 @@ for i in range(length):
     data1_rpeak_i, data1_env_peak_i = Peak_Detection.Peak_Detection(data1, data1_fs, MI)#peak 적용
 
     #피크 확인용
-    
-    """data1_rpeak_i = np.array(
-        [  5792,  14118,  23028,  30809,  36597,  45176,  54421,  61498,
-  67215,  74148,  82003,  90566, 99873, 108465, 116482,
- 123897, 130973, 137065, 143483, 150367, 157484, 164853, 172617, 178985,
- 185925, 193810, 199577, 206449, 212093, 217601, 223519, 229245, 234873])"""
-    data1_rpeak_i=data1_rpeak_i.astype(int)
-    data1_rpeak_i = data1_rpeak_i[data1_rpeak_i>i*size]
-    data1_rpeak_i = data1_rpeak_i[data1_rpeak_i<(i+1)*size-1]
+
+    data1_rpeak_i = np.array(
+        [1222, 2744,
+         5492, 7896, 10341,
+         12558, 15090, 17498, 19871, 22147, 24201, 26139,
+         28189, 30734,
+         33199, 35551, 38315, 40977,
+         43418, 45658, 48087, 50371,
+         52319, 54477, 56610, 58748]
+    )
+
+    data1_rpeak_i = data1_rpeak_i.astype(int)
+    data1_rpeak_i = data1_rpeak_i[data1_rpeak_i > i * size]
+    data1_rpeak_i = data1_rpeak_i[data1_rpeak_i < (i + 1) * size - 1]
     plt.plot(data1_rpeak_i, data1[data1_rpeak_i], 'ro')
 plt.show()
 
 #저장용
 data1_rpeak_i = np.array(
-        [  5792,  14118,  23028,  30809,  36597,  45176,  54421,  61498,
-  67215,  74148,  82003,  90566, 99873, 108465, 116482,
- 123897, 130973, 137065, 143483, 150367, 157484, 164853, 172617, 178985,
- 185925, 193810, 199577, 206449, 212093, 217601, 223519, 229245, 234873])
+    [1222, 2744,
+     5492, 7896, 10341,
+     12558, 15090, 17498, 19871, 22147, 24201, 26139,
+     28189, 30734,
+     33199, 35551, 38315, 40977,
+     43418, 45658, 48087, 50371,
+     52319, 54477, 56610, 58748]
+)
 
 np.save(BIOPAC_folder_path+'2022.12.27_1_gon_gu'+'_data1_rpeak_i', data1_rpeak_i)
 
@@ -92,10 +98,18 @@ for i in range(length):
     plt.xlim([i*size , (i+1)*size-1])
     plt.plot(data2)
     data2_rpeak_i, data1_env_peak_i = Peak_Detection.Peak_Detection(data2, data2_fs, MI)
-    
-    """data2_rpeak_i = np.array([7668,  18748,  30700,  41680,  53052,  64087,  73650,  84170, 93890, 103095,
- 111956, 121413, 130519, 139528, 148201, 157789, 168006, 178204, 188761,
- 198558, 208260, 216461, 224838, 232940])"""
+
+    # 피크 확인용
+
+    data2_rpeak_i = np.array(
+        [1699, 3268, 4874, 6429,
+         7858, 9939, 12369, 14905, 17364,
+         19441, 21723, 23910, 26255, 28901,
+         31350, 33332, 35044, 36634, 37995,
+         39617, 41924, 44071, 45952,
+         47755, 49586, 51617, 53426, 55440,
+         57387, 59277]
+    )
 
     data2_rpeak_i = data2_rpeak_i.astype(int)
     data2_rpeak_i = data2_rpeak_i[data2_rpeak_i>i*size]
@@ -103,8 +117,13 @@ for i in range(length):
     plt.plot(data2_rpeak_i, data2[data2_rpeak_i], 'ro')
 plt.show()
 
-
-data2_rpeak_i = np.array([7668,  18748,  30700,  41680,  53052,  64087,  73650,  84170, 93890, 103095,
- 111956, 121413, 130519, 139528, 148201, 157789, 168006, 178204, 188761,
- 198558, 208260, 216461, 224838, 232940])
+data2_rpeak_i = np.array(
+    [1699, 3268, 4874, 6429,
+     7858, 9939, 12369, 14905, 17364,
+     19441, 21723, 23910, 26255, 28901,
+     31350, 33332, 35044, 36634, 37995,
+     39617, 41924, 44071, 45952,
+     47755, 49586, 51617, 53426, 55440,
+     57387, 59277]
+)
 np.save(BIOPAC_folder_path+'2022.12.27_1_gon_gu' +'_data2_rpeak_i', data2_rpeak_i)
