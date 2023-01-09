@@ -80,7 +80,7 @@ def l0_grad_minimization(y, L):
     return u, h, v
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/2023.01.02/2023.01.02_3_sun_chan"
+dir_path = "./../Data/2023.01.04/2023.01.04_3_gon_gu"
 UWB_data_path = dir_path + "/UWB_cut.npy"
 BIOPAC_data_path = dir_path + "/BIOPAC_cut.npy"
 UWB_data = np.load(UWB_data_path)

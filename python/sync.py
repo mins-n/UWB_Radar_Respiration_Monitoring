@@ -83,7 +83,7 @@ def l0_grad_minimization(y, L):
     return u, h, v
 
 # Raw data extraction from .dat file ======================================
-file_name = "2023.01.04_1_gu_gon"
+file_name = "2023.01.04_3_gon_gu"
 dir_path = "./../Data/2023.01.04/" + file_name
 BIOPAC_path = dir_path + "/" + file_name + ".mat"
 sample_count = 0
@@ -225,9 +225,9 @@ for i in range(Human_cnt):
     rpeak_i, env_peak_i = Peak_Detection.Peak_Detection(UWB_data, fs, MI)
     UWB_rpeak_i.append(rpeak_i)
     plt.figure(num=1, figsize=(10, 8))
-    plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.5)
-    plt.subplot(Human_cnt + 1, 1, 1 + i)
-    plt.subplot(Human_cnt + 1, 1, 1 + i).set_title("UWB Peak Detection " + "Human " + str(i + 1))
+    plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.3)
+    plt.subplot(Human_cnt, 1, 1 + i)
+    plt.subplot(Human_cnt, 1, 1 + i).set_title("UWB Peak Detection " + "Human " + str(i + 1))
     plt.plot(UWB_data)
     rpeak_i = rpeak_i.astype(int)
     plt.plot(rpeak_i, UWB_data[rpeak_i], 'ro')
@@ -280,7 +280,7 @@ print(data1_rpeak_i)
 print(data2_rpeak_i)
 
 plt.figure(num=2, figsize=(10, 20))
-plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=1.3)
+plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspace=0.2)
 plt.subplot(2, 1, 1)
 plt.subplot(2, 1, 1).set_title("BIOPAC Peak Detection Data1")
 plt.xlabel('Time')
