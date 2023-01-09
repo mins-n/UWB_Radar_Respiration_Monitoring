@@ -1,14 +1,69 @@
-
 # regression for MNIST Data set
 import sys
 import tensorflow as tf
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, LSTM, BatchNormalization
+from sklearn.model_selection import train_test_split
 from keras.layers.convolutional import Conv1D, MaxPooling1D
-
+from PIL import image
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+
+window_size = 10
+uwb_fs = 20
+biopac_fs = 500
+root_dir = "./../Data/"
+
+
+def get_img_path(root_dir):
+    file_list = []
+    for (root, dirs, files) in os.walk(root_dir):
+        for file_name in files:
+            if (file_name.endswith("_gray.jpg")):
+                file_list.append(root + "/" + file_name)
+    return file_list
+
+
+def get_peak_path(root_dir):
+    file_list = []
+    for (root, dirs, files) in os.walk(root_dir):
+        for file_name in files:
+            if (file_name.endswith("_data.npy")):
+                file_list.append(root + "/" + file_name)
+    return file_list
+
+def generate_dataset():
+    img = np.zeros((31, 200))
+    img.reshape(1, 31, 200)
+
+    img_path_list = get_img_path(root_dir)
+    for img_path in img_path_list:
+        img.append([])
+        load_img = image.open(img_path)
+        img_data = np.array(load_img)
+        for j in range(110):
+            tmp = img_data[:][j * uwb_fs: (10 + j) * uwb_fs]
+            tmp.reshape(1, len(tmp), len(tmp[0]))
+            img = tmp.concatenate((img, tmp), axis=0)
+    img = np.delete(img, 0, axis=0)
+    return img
+
+
+def generate_ref():
+    ref_list = []
+    ref_path_list = get_peak_path(root_dir)
+    for ref_path in ref_path_list:
+        load_ref = np.load(ref_path)
+        ref_list.append([])
+        for j in range(110):
+            tmp = load_ref
+            tmp = tmp[tmp > j * biopac_fs]
+            tmp = tmp[tmp < (10 + j) * biopac_fs]
+            ref_list[i].append(len(tmp))
+    return ref_list
+
 
 np.random.seed(7)
 
@@ -16,18 +71,21 @@ print('Python version : ', sys.version)
 print('TensorFlow version : ', tf.__version__)
 print('Keras version : ', keras.__version__)
 
-(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+data = generate_dataset()
+answer = generate_ref()
+
+x_train, x_test, y_train, y_test = train_test_split(data, answer, test_size=0.1, shuffle=False)
 
 print('x_train : ', x_train[0])
 print('y_train : ', y_train[0])
 img_rows = 31
-img_cols = 400
+img_cols = 200
 
 input_shape = (img_rows, img_cols, 1)
 x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
 x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
 
-batch_size = 128
+batch_size = 110
 epochs = 100
 
 y_train = y_train.reshape(len(x_train), 1)

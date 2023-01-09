@@ -9,8 +9,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Raw data extraction from .dat file ======================================
-file_name = "2023.01.02_3_sun_chan"
-dir_path = "./../Data/2023.01.02/" + file_name
+file_name = "2023.01.04_3_gon_gu"
+dir_path = "./../Data/2023.01.04/" + file_name
 BIOPAC_path = dir_path + "/" + file_name + ".mat"
 sample_count = 0
 sample_drop_period = 434  # 해당 번째에 값은 사용 안 한다.
