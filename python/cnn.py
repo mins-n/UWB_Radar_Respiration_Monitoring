@@ -6,10 +6,11 @@ from keras.models import Sequential
 from keras.layers import Dense, Flatten, LSTM, BatchNormalization
 from sklearn.model_selection import train_test_split
 from keras.layers.convolutional import Conv1D, MaxPooling1D
-from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 window_size = 10
 uwb_fs = 20
@@ -21,7 +22,7 @@ def get_img_path(root_dir):
     file_list = []
     for (root, dirs, files) in os.walk(root_dir):
         for file_name in files:
-            if (file_name.endswith("_gray.jpg")):
+            if (file_name.endswith("_gray.npy")):
                 file_list.append(root + "/" + file_name)
     return file_list
 
@@ -30,39 +31,9 @@ def get_peak_path(root_dir):
     file_list = []
     for (root, dirs, files) in os.walk(root_dir):
         for file_name in files:
-            if (file_name.endswith("_data.npy")):
+            if (file_name.endswith("_ref.npy")):
                 file_list.append(root + "/" + file_name)
     return file_list
-
-def generate_dataset():
-    img = np.zeros((31, 200))
-    img.reshape(1, 31, 200)
-
-    img_path_list = get_img_path(root_dir)
-    for img_path in img_path_list:
-        img.append([])
-        load_img = Image.open(img_path)
-        img_data = np.array(load_img)
-        for j in range(110):
-            tmp = img_data[:][j * uwb_fs: (10 + j) * uwb_fs]
-            tmp.reshape(1, len(tmp), len(tmp[0]))
-            img = tmp.concatenate((img, tmp), axis=0)
-    img = np.delete(img, 0, axis=0)
-    return img
-
-
-def generate_ref():
-    ref_list = []
-    ref_path_list = get_peak_path(root_dir)
-    for ref_path in ref_path_list:
-        load_ref = np.load(ref_path)
-        ref_list.append([])
-        for j in range(110):
-            tmp = load_ref
-            tmp = tmp[tmp > j * biopac_fs]
-            tmp = tmp[tmp < (10 + j) * biopac_fs]
-            ref_list[i].append(len(tmp))
-    return ref_list
 
 
 np.random.seed(7)
@@ -71,10 +42,27 @@ print('Python version : ', sys.version)
 print('TensorFlow version : ', tf.__version__)
 print('Keras version : ', keras.__version__)
 
-data = generate_dataset()
-answer = generate_ref()
+data_path_list = get_img_path(root_dir)
+ref_path_list = get_peak_path(root_dir)
+#np.save("1", data_path_list)
+#np.save("2",ref_path_list)
+if len(data_path_list) != len(ref_path_list):
+    print("데이터 크기 불일치")
+    sys.exit("오류")
 
-x_train, x_test, y_train, y_test = train_test_split(data, answer, test_size=0.1, shuffle=False)
+data_list = []
+ref_list = []
+
+for data_path in data_path_list:
+    data_list.append(np.load(data_path))
+for ref_path in ref_path_list:
+    ref_list.append(np.load(ref_path))
+data_list = np.reshape(np.array(data_list),(len(data_list)*110,31,200))
+ref_list = np.reshape(np.array(ref_list),(1,len(ref_list)*110))
+ref_list = ref_list[0]
+
+
+x_train, x_test, y_train, y_test = train_test_split(data_list, ref_list, test_size=0.1, shuffle=False)
 
 print('x_train : ', x_train[0])
 print('y_train : ', y_train[0])
@@ -82,31 +70,27 @@ img_rows = 31
 img_cols = 200
 
 input_shape = (img_rows, img_cols, 1)
-x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
-x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
-
 batch_size = 110
-epochs = 100
-
-y_train = y_train.reshape(len(x_train), 1)
-y_test = y_test.reshape(len(x_test), 1)
+epochs = len(data_list)
 
 model = Sequential()
+
 model.add(BatchNormalization())
-model.add(Conv1D(64, kernel_size=(1, 9), strides=(1, 2), padding='same',
+
+model.add(Conv1D(64, kernel_size=9, strides=2, padding='same',
                  activation='relu',
                  input_shape=input_shape))
-model.add(MaxPooling1D(pool_size=(2, 1), strides=(1, 2)))
 
-model.add(Conv1D(128, kernel_size=(1, 5), strides=(1, 2), activation='relu', padding='same'))
-model.add(Conv1D(256, kernel_size=(1, 3), strides=(1, 2), activation='relu', padding='same'))
-model.add(MaxPooling1D(pool_size=(2, 1)))
-
-model.add(LSTM(512, activation='sigmoid'))
+model.add(MaxPooling1D(pool_size=2, strides=2))
+model.add(Conv1D(128, kernel_size= 5, strides=2, activation='relu', padding='same'))
+model.add(Conv1D(256, kernel_size=3, strides=2, activation='relu', padding='same'))
+model.add(MaxPooling1D(pool_size=2, strides=2))
+model.add(LSTM(512, recurrent_dropout=0.1))
 model.add(Flatten(64, activation='relu', kernel_initializer='he_normal'))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam', learning_rate=0.001, metrics=["accuracy"])
+
 
 hist = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=epochs, batch_size=batch_size)
 
