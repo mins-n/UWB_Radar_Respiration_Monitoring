@@ -6,7 +6,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Flatten, LSTM, BatchNormalization
 from sklearn.model_selection import train_test_split
 from keras.layers.convolutional import Conv1D, MaxPooling1D
-from PIL import image
+from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -41,7 +41,7 @@ def generate_dataset():
     img_path_list = get_img_path(root_dir)
     for img_path in img_path_list:
         img.append([])
-        load_img = image.open(img_path)
+        load_img = Image.open(img_path)
         img_data = np.array(load_img)
         for j in range(110):
             tmp = img_data[:][j * uwb_fs: (10 + j) * uwb_fs]

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import Peak_Detection
 
-BIOPAC_folder_path= './../Data/2022.12.27/2022.12.27_2_sun_jin/2/'
+BIOPAC_folder_path= './../Data/2022.12.26/2022.12.26_2_sun_gu/4/'
 BIOPAC_path = BIOPAC_folder_path+"BIOPAC_data.npy" 
 
 
@@ -57,11 +57,12 @@ for i in range(length):
 
     #피크 확인용
     
-    """data1_rpeak_i = np.array(
-        [  5792,  14118,  23028,  30809,  36597,  45176,  54421,  61498,
-  67215,  74148,  82003,  90566, 99873, 108465, 116482,
- 123897, 130973, 137065, 143483, 150367, 157484, 164853, 172617, 178985,
- 185925, 193810, 199577, 206449, 212093, 217601, 223519, 229245, 234873])"""
+    data1_rpeak_i = np.array(
+        [13398,35638, 56881, 77484, 96371,
+         121048, 143732, 163312, 184329,
+         204266, 224214]
+    )
+
     data1_rpeak_i=data1_rpeak_i.astype(int)
     data1_rpeak_i = data1_rpeak_i[data1_rpeak_i>i*size]
     data1_rpeak_i = data1_rpeak_i[data1_rpeak_i<(i+1)*size-1]
@@ -70,13 +71,13 @@ plt.show()
 
 #저장용
 
-# data1_rpeak_i = np.array(
-#         [  5792,  14118,  23028,  30809,  36597,  45176,  54421,  61498,
-#   67215,  74148,  82003,  90566, 99873, 108465, 116482,
-#  123897, 130973, 137065, 143483, 150367, 157484, 164853, 172617, 178985,
-#  185925, 193810, 199577, 206449, 212093, 217601, 223519, 229245, 234873])
-#
-# np.save(BIOPAC_folder_path+'2022.12.27_1_gon_gu'+'_data1_rpeak_i', data1_rpeak_i)
+data1_rpeak_i = np.array(
+    [13398, 35638, 56881, 77484, 96371,
+     121048, 143732, 163312, 184329,
+     204266, 224214]
+)
+
+np.save(BIOPAC_folder_path+'data1_rpeak_i', data1_rpeak_i)
 
 
 size = len(data2)//length
@@ -105,4 +106,4 @@ plt.show()
 # data2_rpeak_i = np.array([7668,  18748,  30700,  41680,  53052,  64087,  73650,  84170, 93890, 103095,
 #  111956, 121413, 130519, 139528, 148201, 157789, 168006, 178204, 188761,
 #  198558, 208260, 216461, 224838, 232940])
-# np.save(BIOPAC_folder_path+'2022.12.27_1_gon_gu' +'_data2_rpeak_i', data2_rpeak_i)
+# np.save(BIOPAC_folder_path +'data2_rpeak_i', data2_rpeak_i)
