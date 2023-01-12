@@ -52,6 +52,8 @@ def generate_ref():
     for ref_path in ref_path_list:
         ref_list = []
         load_ref = np.load(ref_path)
+        load_ref = np.sort(load_ref)
+        load_ref = np.unique(load_ref)
         dir__ = os.path.dirname(ref_path)
         dir__ = dir__ + "\\BIOPAC_data.npy"
         biopac_fs = np.load(dir__,allow_pickle=True)[1]

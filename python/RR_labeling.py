@@ -20,8 +20,8 @@ def get_img_path(root_dir):
     for (root, dirs, files) in os.walk(root_dir):
         for file_name in files:
             if (file_name.endswith("_gray.jpg")):
-                #load_img = Image.open(root+"/"+file_name).convert("L")
-                #np.save(file_name[:-4] + ".npy", np.array(load_img))
+                file_list.append(root + "/" + file_name)
+            if (file_name.endswith("_person.jpg")):
                 file_list.append(root + "/" + file_name)
     return file_list
 
@@ -52,6 +52,8 @@ def generate_ref():
     for ref_path in ref_path_list:
         ref_list = []
         load_ref = np.load(ref_path)
+        load_ref = np.sort(load_ref)
+        load_ref = np.unique(load_ref)
         dir__ = os.path.dirname(ref_path)
         dir__ = dir__ + "\\BIOPAC_data.npy"
         biopac_fs = np.load(dir__,allow_pickle=True)[1]
@@ -68,7 +70,7 @@ def generate_ref():
                     k = k + 1
             diffs = np.diff(tmp)
             tmp_diffs = np.mean(diffs)
-            RR = round(60/(tmp_diffs/biopac_fs),2)
+            RR = round(60/(tmp_diffs/biopac_fs))
             ref_list.append(RR)
         np.save(ref_path[:-12] + "_ref.npy",ref_list)
     return "complete"
