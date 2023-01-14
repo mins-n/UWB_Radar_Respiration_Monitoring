@@ -13,7 +13,7 @@ import sys
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, LSTM, BatchNormalization, InputLayer
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -23,7 +23,8 @@ import cv2
 window_size = 10
 uwb_fs = 20
 biopac_fs = 500
-root_dir = '/content/drive/MyDrive/Colab Notebooks/Data'
+# root_dir = '/content/drive/MyDrive/Colab Notebooks/Data'
+root_dir = "./../Data/"
 
 
 def get_img_path(root_dir):
