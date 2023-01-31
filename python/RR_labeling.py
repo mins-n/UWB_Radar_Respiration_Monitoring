@@ -1,14 +1,12 @@
 # regression for MNIST Data set
-import sys
 #import tensorflow as tf
 #import keras
 #from keras.models import Sequential
 #from keras.layers import Dense, Flatten, LSTM, BatchNormalization
-from sklearn.model_selection import train_test_split
+#from sklearn.model_selection import train_test_split
 #from keras.layers.convolutional import Conv1D, MaxPooling1D
 from PIL import Image
 import numpy as np
-import matplotlib.pyplot as plt
 import os
 
 window_size = 10
@@ -70,8 +68,9 @@ def generate_ref():
                     k = k + 1
             diffs = np.diff(tmp)
             tmp_diffs = np.mean(diffs)
-            RR = round(60/(tmp_diffs/biopac_fs))
+            RR = round(60/(tmp_diffs/biopac_fs),2)
             ref_list.append(RR)
+        print(ref_list)
         np.save(ref_path[:-12] + "_ref.npy",ref_list)
     return "complete"
 
