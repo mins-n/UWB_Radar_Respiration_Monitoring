@@ -37,7 +37,7 @@ def generate_dataset():
     for img_path in img_path_list:
         img = []
         load_img = Image.open(img_path).convert("L")
-        print(load_img)
+        # print(load_img)
         img_data = np.array(load_img)
         for j in range(110):
             tmp = img_data[:, j * uwb_fs:(10 + j) * uwb_fs]
@@ -70,7 +70,7 @@ def generate_ref():
             tmp_diffs = np.mean(diffs)
             RR = round(60/(tmp_diffs/biopac_fs),2)
             ref_list.append(RR)
-        print(ref_list)
+        # print(ref_list)
         np.save(ref_path[:-12] + "_ref.npy",ref_list)
     return "complete"
 
