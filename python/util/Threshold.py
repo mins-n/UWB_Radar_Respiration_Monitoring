@@ -128,8 +128,13 @@ class Threshold:
                     Distance = np.r_[Distance, [[0, 0]]]
                     Distance[Human_cnt - 1, :] = [i - TC_cnt, i - 1]
                     TC_cnt = 0
+
+        if Human_cnt > Human:
+            Human_cnt = Human
+
         Max_sub = np.zeros((Human_cnt, 1))
         Max_sub_Index = np.zeros((Human_cnt, 1))
+
         for i in range(Human_cnt):
             Max_sub[i, 0] = max(SD[int(Distance[i, 0]) - 1:int(Distance[i, 1])])
             Max_sub_Index[i, 0] = np.argmax(SD[int(Distance[i, 0]) - 1:int(Distance[i, 1])])
