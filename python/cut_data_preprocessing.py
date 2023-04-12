@@ -117,8 +117,8 @@ for Window_sliding in range(5):
         L = 0.02
         [u, ux, uy] = l0_grad_minimization(im, L)
 
-        Scharr_dx = cv2.Scharr(u.astype('float32'), -1, 1, 0)
-        Scharr_dy = cv2.Scharr(u.astype('float32'), -1, 0, 1)
+        Scharr_dx = cv2.Scharr(u.astype("float32"), -1, 1, 0)
+        Scharr_dy = cv2.Scharr(u.astype("float32"), -1, 0, 1)
         Scharr_mag = cv2.magnitude(Scharr_dx, Scharr_dy)
         img = cv2.bilateralFilter(Scharr_mag, -1, 5, 10)
 
@@ -127,18 +127,18 @@ for Window_sliding in range(5):
         plt.subplot(3, 1, 1)
         plt.subplot(3, 1, 1).set_title("slow index is " + str(Max_sub_Index[i, 0])+ "\n Image smoothing")
         plt.pcolor(img)
-        plt.xlabel('Time')
-        plt.ylabel('Distance')
+        plt.xlabel("Time")
+        plt.ylabel("Distance")
 
         image = save_dir_path + "/" + str(i + 1) + "_person.jpg"
         gray_image = save_dir_path + "/" + str(i + 1) + "_person_gray.jpg"
         print(gray_image)
         plt.subplot(3, 1, 2)
         plt.subplot(3, 1, 2).set_title("Image Gray Scaling")
-        plt.imshow(img, cmap='gray')
+        plt.imshow(img, cmap="gray")
         plt.imsave(image, img)
-        plt.imsave(gray_image, img, cmap='gray')
-        plt.xlabel('Time')
-        plt.ylabel('Distance')
+        plt.imsave(gray_image, img, cmap="gray")
+        plt.xlabel("Time")
+        plt.ylabel("Distance")
     plt.show()
 
