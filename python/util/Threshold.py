@@ -70,8 +70,8 @@ class Threshold:
         plt.title("Dynamic Threshold and Standard deviation of raw data")
         plt.plot(Dynamic_threshold)
         plt.plot(SD)
-        plt.xlabel('Distance')
-        plt.ylabel('standard deviation')
+        plt.xlabel("Distance")
+        plt.ylabel("standard deviation")
         plt.legend(["Dynamic_threshold", "Standard deviation of raw data"])
 
         TC_matrix = np.array([])
