@@ -80,7 +80,7 @@ def l0_grad_minimization(y, L):
     return u, h, v
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/2023.01.18/2023.01.18_1_goo_gon"
+dir_path = "./../Data/2023.01.18/2023.01.18_2_goo_gon"
 UWB_data_path = dir_path + "/UWB_cut.npy"
 BIOPAC_data_path = dir_path + "/BIOPAC_cut.npy"
 UWB_data = np.load(UWB_data_path)
@@ -95,7 +95,10 @@ window_BIOPAC_data_1 = []
 window_BIOPAC_data_2 = []
 UWB_fs = 20
 get_size = 120 # second
-dump_size = 30 # second
+if len(UWB_data[0]) > 13900:
+    dump_size = 30  # second
+else:
+    dump_size = 0  # second
 fast_to_m = 0.006445  # fast index to meter
 UWB_Radar_index_start = 0.5  # UWB Radar Range 0.5 ~ 2.5m
 UWB_Radar_index_start = math.floor(UWB_Radar_index_start / fast_to_m)
