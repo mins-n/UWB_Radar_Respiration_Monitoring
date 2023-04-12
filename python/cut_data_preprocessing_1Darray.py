@@ -35,15 +35,21 @@ for dir_path in tqdm(file_list):
     window_BIOPAC_data_2 = []
     UWB_fs = 20
     get_size = 120 # second
-    dump_size = 30 # second
+
+    if len(UWB_data[0]) > 13900:
+        dump_size = 30 # second
+    else:
+        dump_size = 0  # second
     fast_to_m = 0.006445  # fast index to meter
     UWB_Radar_index_start = 0.5  # UWB Radar Range 0.5 ~ 2.5m
     UWB_Radar_index_start = math.floor(UWB_Radar_index_start / fast_to_m)
 
-    Threshold = util.Threshold(dir_path, UWB_data, BIOPAC_data, UWB_Radar_index_start, get_size, UWB_fs)
+    Threshold = util.Threshold(dir_path, UWB_data, BIOPAC_data, UWB_Radar_index_start, get_size, UWB_fs, dump_size)
 
-    for Window_sliding in range(int(len(UWB_data[0]) / (get_size * UWB_fs))):
+    for Window_sliding in range(5):
         save_dir_path = dir_path + "/" + str(Window_sliding)
+        # if save_dir_path == "./../Data/2023.01.10/2023.01.10_6_soo_jin/4":
+        #     print(11)
         if not os.path.exists(save_dir_path):
             continue
 
@@ -54,6 +60,9 @@ for dir_path in tqdm(file_list):
         Human_cnt, Distance, Max_sub_Index = Threshold.dynamic_threshold(Window_sliding)
 
         for i in range(Human_cnt):
+            check_path = save_dir_path + "/" + str(i + 1) + "_person.npy"
+            if not os.path.exists(check_path):
+                continue
             save_UWB_path = save_dir_path + "/" + str(i + 1) + "_person_UWB.npy"
             save_UWB = Window_UWB_data[int(Max_sub_Index[i,0]), :]
             np.save(save_UWB_path,save_UWB)
