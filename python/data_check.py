@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 
-dir_path = "./../Data/2023.01.18/2023.01.18_2_goo_gon/0/"
+dir_path = "./../Data/2023.01.18/2023.01.18_2_goo_gon/1/"
 
 img1 = mpimg.imread(dir_path + "1_person.jpg")
 gray1 = mpimg.imread(dir_path + "1_person_gray.jpg")
