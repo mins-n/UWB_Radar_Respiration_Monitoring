@@ -55,5 +55,5 @@ for dir_path in tqdm(file_list):
 
         for i in range(Human_cnt):
             save_UWB_path = save_dir_path + "/" + str(i + 1) + "_person_UWB.npy"
-            save_UWB = Window_UWB_data[int(Distance[i, 0]):int(Distance[i, 1]) + 1, :]
+            save_UWB = Window_UWB_data[int(Max_sub_Index[i,0]), :]
             np.save(save_UWB_path,save_UWB)
