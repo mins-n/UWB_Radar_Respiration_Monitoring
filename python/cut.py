@@ -54,8 +54,8 @@ plt.figure(num=1,figsize=(10, 8))
 plt.title("Dynamic Threshold and Standard deviation of raw data")
 plt.plot(Dynamic_threshold)
 plt.plot(SD)
-plt.xlabel('Distance')
-plt.ylabel('standard deviation')
+plt.xlabel("Distance")
+plt.ylabel("standard deviation")
 plt.legend(["Dynamic_threshold","Standard deviation of raw data"])
 
 TC_matrix = np.array([])
@@ -153,11 +153,11 @@ for i in range(Human_cnt):
     plt.subplot(Human_cnt, 1, 1 + i)
     plt.subplot(Human_cnt, 1, 1 + i).set_title("UWB Peak Detection " + "Human " + str(i + 1) +"_" + str(Max_sub_Index[i, 0]))
     plt.plot(UWB_data)
-    plt.xlabel('Time')
-    plt.ylabel('Amplitude')
+    plt.xlabel("Time")
+    plt.ylabel("Amplitude")
 
 data = scipy.io.loadmat(BIOPAC_path)
-data = np.array(data['channels'])  # Convert the data to a NumPy array
+data = np.array(data["channels"])  # Convert the data to a NumPy array
 
 data1 = data[0][0][0][0][0][0]
 data1_fs = int(data[0][0][0][0][1][0])
@@ -174,14 +174,14 @@ plt.subplots_adjust(left=0.125, bottom=0.1, right=0.9, top=0.9, wspace=0.2, hspa
 plt.subplot(2, 1, 1)
 plt.subplot(2, 1, 1).set_title("BIOPAC Peak Detection Data1")
 plt.plot(data1[:data1_fs*show_idx])
-plt.xlabel('Time')
-plt.ylabel('Amplitude')
+plt.xlabel("Time")
+plt.ylabel("Amplitude")
 
 plt.subplot(2, 1, 2)
 plt.subplot(2, 1, 2).set_title("BIOPAC Peak Detection Data2")
 plt.plot(data2[:data2_fs*show_idx])
-plt.xlabel('Time')
-plt.ylabel('Amplitude')
+plt.xlabel("Time")
+plt.ylabel("Amplitude")
 plt.show()
 
 cut_idx = int(input("UWB Rawdata 그래프를 참고하여 자를 부분에 index를 입력하시오 "))
