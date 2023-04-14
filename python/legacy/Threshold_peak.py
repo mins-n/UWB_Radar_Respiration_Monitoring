@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
-import Peak_Detection
+from util import Peak_Detection
 
 import warnings
 warnings.filterwarnings("ignore")
