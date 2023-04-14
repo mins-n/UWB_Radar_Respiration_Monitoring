@@ -1,4 +1,4 @@
-import Peak_Detection
+from util import Peak_Detection
 import numpy as np
 import os
 import matplotlib.pyplot as plt
