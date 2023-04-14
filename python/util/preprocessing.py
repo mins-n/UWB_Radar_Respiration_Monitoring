@@ -43,8 +43,8 @@ def l0_grad_minimization(y, L):
     dy[1, 1] = -1.0
     dy[1, M - 1] = 1.0
 
-    fdxt = np.tile(np.conj(np.fft.fft2(dx)), [1, 1]);
-    fdyt = np.tile(np.conj(np.fft.fft2(dy)), [1, 1]);
+    fdxt = np.tile(np.conj(np.fft.fft2(dx)), [1, 1])
+    fdyt = np.tile(np.conj(np.fft.fft2(dy)), [1, 1])
 
     adxy = abs(fdxt) ** 2 + abs(fdyt) ** 2
 
@@ -52,8 +52,6 @@ def l0_grad_minimization(y, L):
     for t in range(50):
         if beta <= 1e-2:
             break
-        np.disp(t)
-        np.disp(beta)
 
         [ux, uy] = gradients(u)
 
