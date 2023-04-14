@@ -2,7 +2,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import Peak_Detection
+from util import Peak_Detection
 import scipy.io
 
 import warnings
