@@ -3,43 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Threshold:
-    def __init__(self, dir_path, UWB_data, BIOPAC_data, UWB_Radar_index_start, get_size = 120, UWB_fs = 20, dump_size = 0):
+    def __init__(self, dir_path, UWB_data, UWB_Radar_index_start, get_size = 120, UWB_fs = 20, dump_size = 0, show = True):
         self.dir_path = dir_path
         self.UWB_data = UWB_data
-        self.BIOPAC_data_1 = BIOPAC_data[0]
-        self.BIOPAC_fs_1 = BIOPAC_data[1]
-        self.BIOPAC_data_2 = BIOPAC_data[2]
-        self.BIOPAC_fs_2 = BIOPAC_data[3]
         self.UWB_Radar_index_start = UWB_Radar_index_start
         self.get_size = get_size
         self.UWB_fs = UWB_fs
         self.dump_size = dump_size
+        self.show = show
         self.fast_to_m = 0.006445 # fast index to meter
 
-    def baseline_threshold(self, Window_sliding):
-        save_dir_path = self.dir_path + "/" + str(Window_sliding)
-        BIOPAC_data_save_path = save_dir_path + "/BIOPAC_data.npy"
-        if not os.path.exists(save_dir_path):
-            os.mkdir(save_dir_path)
-        Window_UWB_data = np.array(
-            self.UWB_data[:,
-            self.get_size * self.UWB_fs * Window_sliding + Window_sliding * self.dump_size * self.UWB_fs:
-            self.get_size * self.UWB_fs * (Window_sliding + 1) + Window_sliding * self.dump_size * self.UWB_fs])
-        window_BIOPAC_data_1 = np.array(
-            self.BIOPAC_data_1[
-            Window_sliding * self.get_size * self.BIOPAC_fs_1 + Window_sliding * self.dump_size * self.UWB_fs
-            : (Window_sliding + 1) * self.get_size * self.BIOPAC_fs_1 + Window_sliding * self.dump_size * self.UWB_fs])
-        window_BIOPAC_data_2 = np.array(
-            self.BIOPAC_data_2[
-            Window_sliding * self.get_size * self.BIOPAC_fs_2 + Window_sliding * self.dump_size * self.UWB_fs
-            : (Window_sliding + 1) * self.get_size * self.BIOPAC_fs_2 + Window_sliding * self.dump_size * self.UWB_fs])
-        BIOPAC_data = []
-        BIOPAC_data.append(window_BIOPAC_data_1)
-        BIOPAC_data.append(self.BIOPAC_fs_1)
-        BIOPAC_data.append(window_BIOPAC_data_2)
-        BIOPAC_data.append(self.BIOPAC_fs_2)
-        np.save(BIOPAC_data_save_path, BIOPAC_data)
-
+    def baseline_threshold(self, Window_UWB_data):
         SD = np.array([])
         for i in range(len(Window_UWB_data)):
             SD = np.append(SD, np.std(Window_UWB_data[i]))  # 거리에 대한 표준편차 배열
@@ -55,8 +29,8 @@ class Threshold:
 
         return SD, d0, baselineThreashold
 
-    def dynamic_threshold(self, Window_sliding, Human = 2, dynamic_TC = 16):
-        SD, d0, baselineThreashold = self.baseline_threshold(Window_sliding)
+    def dynamic_threshold(self, Window_UWB_data, Human = 2, dynamic_TC = 16):
+        SD, d0, baselineThreashold = self.baseline_threshold(Window_UWB_data)
         di = np.arange(1, len(self.UWB_data) + 1, 1)
         di = di + self.UWB_Radar_index_start
         di = di * self.fast_to_m
@@ -66,13 +40,14 @@ class Threshold:
             k = np.append(k, di[i] ** 2 / d0 ** 2)
         k = k ** (-1)
         Dynamic_threshold = np.array(k) * baselineThreashold
-        plt.figure(num=1, figsize=(10, 8))
-        plt.title("Dynamic Threshold and Standard deviation of raw data")
-        plt.plot(Dynamic_threshold)
-        plt.plot(SD)
-        plt.xlabel("Distance")
-        plt.ylabel("standard deviation")
-        plt.legend(["Dynamic_threshold", "Standard deviation of raw data"])
+        if self.show == True:
+            plt.figure(num=1, figsize=(10, 8))
+            plt.title("Dynamic Threshold and Standard deviation of raw data")
+            plt.plot(Dynamic_threshold)
+            plt.plot(SD)
+            plt.xlabel("Distance")
+            plt.ylabel("standard deviation")
+            plt.legend(["Dynamic_threshold", "Standard deviation of raw data"])
 
         TC_matrix = np.array([])
         Distance = np.zeros((0, 2))
@@ -88,7 +63,8 @@ class Threshold:
         Human_cnt = 0
 
         while Human_cnt < Human:
-            print("Human_cnt:%d Dynamic_TC:%d" % (Human_cnt, dynamic_TC))
+            if self.show == True:
+                print("Human_cnt:%d Dynamic_TC:%d" % (Human_cnt, dynamic_TC))
             if dynamic_TC == 1: break
             Human_cnt = 0
             dynamic_TC -= 1
