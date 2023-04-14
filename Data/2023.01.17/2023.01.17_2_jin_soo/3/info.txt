@@ -1,0 +1,13 @@
+데이터 길이: 120초
+UWB fs: 20
+BIOPAC fs: 500
+
+0.5m 부터 측정
+77index 부터 측정
+
+인식된 사람수: 2명
+첫번째 사람의 fast index: 159.0
+첫번째 사람의 meter: 1.52m
+
+두번째 사람의 fast index: 230.0
+두번째 사람의 meter: 1.98m
