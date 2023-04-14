@@ -1,0 +1,5 @@
+UWB 데이터 길이: 12.78분
+UWB fs: 20
+BIOPAC 데이터 길이: 12.76분
+BIOPAC fs: 500
+
