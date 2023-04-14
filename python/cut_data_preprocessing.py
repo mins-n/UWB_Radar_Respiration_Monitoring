@@ -21,7 +21,7 @@ root_dir = "./../Data/"
 error_dir = root_dir + "error.txt"
 file_list = get_data_path(root_dir)
 error_list = []
-for dir_path in tqdm(file_list):
+for dir_path in tqdm(file_list[22:]):
     UWB_data_path = dir_path + "/UWB_sync.npy"
     BIOPAC_data_path = dir_path + "/BIOPAC_sync.npy"
     ori_UWB_data = np.load(UWB_data_path)
@@ -36,9 +36,11 @@ for dir_path in tqdm(file_list):
     window_BIOPAC_data_2 = []
     UWB_fs = 20
     get_size = 120 # second
-    if len(ori_UWB_data[0]) > 14000:
-        dump_size = 30  # second
-        UWB_data = ori_UWB_data[:,30*UWB_fs:]
+    dump_size = 30  # second
+    if len(ori_UWB_data[0]) > 15500:
+        UWB_data = ori_UWB_data[:, 35 * UWB_fs:]
+    elif len(ori_UWB_data[0]) > 14900:
+        UWB_data = ori_UWB_data[:,30 * UWB_fs:]
     else:
         if len(ori_UWB_data[0]) > 12600:
             UWB_data = ori_UWB_data[:,400:]
@@ -164,5 +166,5 @@ for dir_path in tqdm(file_list):
 with open(error_dir, "w", encoding="utf8") as f:
     f.write("아래 경로 사람수 2 이하 오류")
     for err in error_list:
-        f.write(err)
+        f.write(err + "\n")
 

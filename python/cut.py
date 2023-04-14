@@ -9,7 +9,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Raw data extraction from .dat file ======================================
-dir_path = "./../Data/2022.12.26/2022.12.26_2_sun_gu"
+dir_path = "./../Data/2023.01.10/2023.01.10_5_soo_jin"
 
 UWB_data_path = dir_path + "/UWB_sync.npy"
 BIOPAC_data_path = dir_path + "/BIOPAC_sync.npy"

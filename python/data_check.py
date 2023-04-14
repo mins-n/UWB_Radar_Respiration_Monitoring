@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
-base_path = "./../Data/2023.01.04/2023.01.04_1_gu_gon"
+base_path = "./../Data/2023.01.17/2023.01.17_2_jin_soo"
 base_path = base_path + "/"
 
 for i in range(5):
