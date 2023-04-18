@@ -9,5 +9,5 @@ BIOPAC fs: 500
 첫번째 사람의 fast index: 97.0
 첫번째 사람의 meter: 1.12m
 
-두번째 사람의 fast index: 192.0
-두번째 사람의 meter: 1.73m
+두번째 사람의 fast index: 250.0
+두번째 사람의 meter: 2.11m
