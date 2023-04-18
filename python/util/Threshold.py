@@ -118,11 +118,11 @@ class Threshold:
             Max_sub_Index[i, 0] += Distance[i, 0]
 
             if len(self.UWB_data) < Max_sub_Index[i, 0] + 15:
-                Distance[i, 0] = Max_sub_Index[i, 0] - 15
+                Distance[i, 0] = len(self.UWB_data[1]) - 30
                 Distance[i, 1] = len(self.UWB_data[1])
-            elif Max_sub_Index[i, 0] - 15 < 1:
-                Distance[i, 0] = 1
-                Distance[i, 1] = Max_sub_Index[i, 0] + 15
+            elif Max_sub_Index[i, 0] < 15:
+                Distance[i, 0] = 0
+                Distance[i, 1] = 30
             else:
                 Distance[i, 0] = Max_sub_Index[i, 0] - 15
                 Distance[i, 1] = Max_sub_Index[i, 0] + 15
