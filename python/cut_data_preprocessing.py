@@ -5,6 +5,7 @@ import cv2
 import os
 import util
 from tqdm import tqdm
+from sklearn.preprocessing import MinMaxScaler
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -21,7 +22,7 @@ root_dir = "./../Data/"
 error_dir = root_dir + "error.txt"
 file_list = get_data_path(root_dir)
 error_list = []
-for dir_path in tqdm(file_list[22:]):
+for dir_path in tqdm(file_list):
     UWB_data_path = dir_path + "/UWB_sync.npy"
     BIOPAC_data_path = dir_path + "/BIOPAC_sync.npy"
     ori_UWB_data = np.load(UWB_data_path)
@@ -73,6 +74,7 @@ for dir_path in tqdm(file_list[22:]):
         BIOPAC_data_save_path = save_dir_path + "/BIOPAC_data.npy"
 
         if not os.path.exists(save_dir_path):
+            continue
             os.mkdir(save_dir_path)
 
         Human = 2
@@ -110,7 +112,10 @@ for dir_path in tqdm(file_list[22:]):
             save_UWB = Window_UWB_data[int(Max_sub_Index[i, 0]), :]
             np.save(save_UWB_path, save_UWB)
 
-            im = Window_UWB_data[int(Distance[i, 0]):int(Distance[i, 1]) + 1, :]
+            scale_data = Window_UWB_data[int(Distance[i, 0]):int(Distance[i, 1]), :]
+            scaler = MinMaxScaler().fit(scale_data)
+            scaled_data = scaler.transform(scale_data)
+            im = scaled_data
 
             L = 0.02
             [u, ux, uy] = util.l0_grad_minimization(im, L)
